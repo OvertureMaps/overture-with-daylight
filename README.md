@@ -16,4 +16,9 @@ WHERE bbox.minx > -126.7952
 
 
 #### Building the tilesets
-`tippecanoe -fo buildings.mbtiles -Z13 -z16 --layer-name=buildings buildings.geojsonseq`
+
+`tippecanoe -fo buildings.pmtiles -Z13 -z15 - buildings buildings.geojsonseq`
+
+`tippecanoe -fo places.pmtiles -Z13 -z15 -l places places.geojsonseq`
+
+`tippecanoe -fo roads.pmtiles -Z10 -z12 -l roads segments.geojsonseq`

@@ -1,10 +1,136 @@
 <html>
-<head>
+    <head>
+        <title>Fast PMTiles Inspector</title>
+        <meta charset="utf-8"/>
+        <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css" crossorigin="anonymous">
+        <script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js" crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/pmtiles@2.7.0/dist/index.js"></script>
+        <style>
+            body {
+                margin: 0;
+            }
+            #map {
+                height:100%; width:100%;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="map"></div>
+        <script type="text/javascript">
+            // add the PMTiles plugin to the maplibregl global.
+            let protocol = new pmtiles.Protocol();
+            maplibregl.addProtocol("pmtiles",protocol.tile);
 
-</head>
+            let urlParams = new URLSearchParams(window.location.search);
 
-<body>
-there's going to be a map here.
-</body>
+            // let port = urlParams.get('port') || 8081
+            // let pmtiles_file = urlParams.get('pmtiles') || 'test.pmtiles'
+
+            // let PMTILES_URL = `http://localhost:${port}/${pmtiles_file}`
+            let LAYER = urlParams.get('layer') || 'test'
+
+            let LAYERS = ['points','lines','polygons']
+
+            // let PMTILES_URL = "https://protomaps.github.io/PMTiles/protomaps(vector)ODbL_firenze.pmtiles";
+
+            const p = new pmtiles.PMTiles("http://localhost:8000/roads.pmtiles")
+
+            // this is so we share one instance across the JS code and the map renderer
+            protocol.add(p);
+
+            // we first fetch the header so we can get the center lon, lat of the map.
+            p.getHeader().then(h => {
+                console.log(h)
+                const map = new maplibregl.Map({
+                    container: 'map',
+                    zoom: h.minZoom,
+                    center: [h.centerLon, h.centerLat],
+                    hash: true,
+                    style: {
+                        version:8,
+                        sources: {
+                            "primary_source": {
+                                type: "vector",
+                                url: "pmtiles://" + PMTILES_URL,
+                            }
+                        },
+                        layers: [
+                            {
+                                "id":'points',
+                                "source": "primary_source",
+                                "source-layer":LAYER,
+                                "type": "circle",
+                                'paint': {
+                                    'circle-opacity': 1,
+                                    'circle-color': 'red',
+                                    'circle-radius': 10,
+                                    'circle-blur': 0,
+                                },
+                                'layout':{
+                                    'visibility': 'visible'
+                                },
+                                'filter': ["==", ["geometry-type"], "Point"]
+                            },
+
+                            {
+                                "id":'polygons',
+                                "source": "primary_source",
+                                "source-layer":LAYER,
+                                "type": "fill",
+                                'paint': {
+                                    'fill-opacity': 0.5,
+                                    'fill-color': 'blue',
+                                },
+                                'layout':{
+                                    'visibility': 'visible'
+                                },
+                                'filter': ['any', ["==", ["geometry-type"], "Polygon"],["==", ["geometry-type"], "MultiPolygon"]]
+                            },
+                        ]
+                    }
+                });
+                map.showTileBoundaries = true;
+
+                // Add interaction on hover
+                var popup = new maplibregl.Popup({
+                    closeButton: true,
+                    closeOnClick: true
+                });
+
+                LAYERS.forEach(function(l){
+                    map.on('mouseenter', l, function () {
+                        map.getCanvas().style.cursor = 'pointer';
+                    });
+                    map.on('mouseleave', l, function () {
+                        map.getCanvas().style.cursor = '';
+                    });
+
+                    map.on('click', l, function (e){
+                        console.log(e)
+
+                        var coordinates = e.lngLat
+
+                        var html = '<table>'
+
+                        Object.keys(e.features[0].properties).forEach(function(key){
+                            value = e.features[0].properties[key]
+                            date = false
+                            if (Number(value) > 949960501){
+                                date = new Date(value * 1000).toDateString() + `<br>(${value})`
+                            }
+                            html += '<tr>'
+                            html += `<td><strong>${key}</strong></td><td>${ ( date? date : value)}</td>`
+                            html += '</tr>'
+                        })
+
+                        html += '</table>'
+                        var description = JSON.stringify(e.features[0].properties)
+
+
+                        popup.setLngLat(coordinates).setHTML(html).addTo(map);
+                    });
+                })
+            })
+        </script>
+    </body>
 </html>
-
