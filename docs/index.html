@@ -81,6 +81,9 @@
                 font-family: 'Londrina Solid', cursive;
                 font-size: larger;
             }
+            .layer-button input{
+                max-width:50px;
+            }
 
             /* Styles for each button */
             .action-button {
@@ -122,7 +125,6 @@
                 color: aliceblue;
                 border-radius: 4px;
             }
-
         </style>
     </head>
 
@@ -136,10 +138,14 @@
         <!-- Individual buttons for layer control -->
         <div class="layer-control">
             <button class="layer-button" onclick="toggleLayerGroup('buildings')">Buildings</button>
-            <button class="layer-button" onclick="toggleLayerGroup('places')">Places</button>
             <button class="layer-button" onclick="toggleLayerGroup('roads')">Roads</button>
+            <button class="layer-button" onclick="toggleLayerGroup('places')">Places</button>
+            <input type="range" id="placesThreshold" oninput="filterPlaces(this.value)" min="0" max="99" value="75">
+            <br><hr>
             <button class="layer-button" onclick="toggleLayerGroup('landcover')">Land</button>
             <button class="layer-button" onclick="toggleLayerGroup('water')">Water</button>
+            <button class="layer-button" onclick="toggleLayerGroup('placenames')">Placenames</button>
+            <hr>
         </div>
 
         <div class="action-control">
@@ -179,7 +185,8 @@
         zoom: 14,
         container: 'map',
         antialias: true,
-        minZoom: 11,
+        minZoom: 10,
+        hash:true,
         attributionControl: false,
         style: {
             version: 8,
@@ -609,13 +616,14 @@
                     "id": "placesLabel",
                     "type": "symbol",
                     "source": "places",
-                    "source-layer": "places",
+                    "source-layer": "placesgeojsonseq",
                     "filter": ["all",
-                        ["has", "common_name"]
+                        ["has", "name"],
+                        [">", ["get", "confidence"], 0.75]
                     ],
-                    "minzoom": 16, "maxzoom": 24,
+                    "minzoom": 14, "maxzoom": 24,
                     "layout": {
-                        "text-field": ["get", "common_name"],
+                        "text-field": ["get", "name"],
                         "text-font": ["Noto Sans Bold"],
                         "text-max-width": 5,
                         "text-size": 10,
@@ -839,6 +847,14 @@
         });
     }
 
+    function filterPlaces(val){
+        map.setFilter('placesLabel',["all",
+            ["has", "name"],
+            [">=", ["get", "confidence"], val/100]
+        ])
+
+    }
+
     function toggleLayer(layerID) {
         const layer = map.getLayer(layerID);
         if (layer) {
@@ -857,8 +873,9 @@
             buildings: ['buildingLabel', 'buildingOffset', 'building'],
             places: ['placesLabel'],
             roads: ['highwayLabel', 'residentialLabel', 'motorway', 'motorwayCasing', 'primary', 'secondaryTertiary', 'residential', 'parkingAisleUnknown', 'footway', 'primaryCasing', 'secondaryTertiaryCasing', 'residentialCasing', 'parkingAisleUnknownCasing', 'footwayCasing'],
-            landcover: ['sand', 'wetland', 'forest'],
-            water: ['water']
+            landcover: ['land','sand', 'wetland', 'forest'],
+            water: ['water'],
+            placenames: ['placeHighZoom','label-place-midzoom']
         };
 
         layers[layerGroup].forEach(layer => {
