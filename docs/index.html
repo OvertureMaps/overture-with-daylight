@@ -865,7 +865,7 @@
         const layer = map.getLayer(layerID);
         if (layer) {
             const visibility = map.getLayoutProperty(layerID, 'visibility');
-            if (visibility === 'visible') {
+            if ((visibility === 'visible' || visibility == undefined)) {
                 map.setLayoutProperty(layerID, 'visibility', 'none');
             } else {
                 map.setLayoutProperty(layerID, 'visibility', 'visible');
