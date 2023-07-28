@@ -3,7 +3,6 @@
 ## Creating the Tilesets
 
 ### Obtain the Data
-Using this bbox for
 
 ```sql
 WHERE bbox.minx > -126.7952
@@ -17,8 +16,8 @@ WHERE bbox.minx > -126.7952
 
 #### Building the tilesets
 
-`tippecanoe -fo buildings.pmtiles -Z13 -z15 - buildings buildings.geojsonseq`
+Step 1: Use Athena to download a CSV with WKT geometries for the desired area using the bbox filters above.
 
-`tippecanoe -fo places.pmtiles -Z13 -z15 -l places places.geojsonseq`
+Step 2: Use DuckDB to convert the CSV to GeoJSONSeq and perform any additional filtering, extraction, etc.
 
-`tippecanoe -fo roads.pmtiles -Z10 -z12 -l roads segments.geojsonseq`
+Step 3: Use tippecanoe to create `.pmtiles` archives from the geojson.
