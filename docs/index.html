@@ -151,6 +151,11 @@
                 font-family: 'Londrina Solid', cursive;
                 font-size: larger;
             }
+
+            .slider{
+                cursor: pointer;
+                max-width:70px;
+            }
         </style>
     </head>
 
@@ -163,14 +168,15 @@
     <div class="box">
         <!-- Individual buttons for layer control -->
         <div class="layer-control">
-            <button class="layer-button active" id='roads', onclick="toggleLayerGroup('roads')"> <img src="img/overture.png" class='inline'> Roads</button><br>
+            <button class="layer-button active" id='roads', onclick="toggleLayerGroup('roads')"> <img src="img/overture.png" class='inline'> Roads</button>
+            <button class="layer-button active" id='places', onclick="toggleLayerGroup('places')"><img src="img/overture.png" class='inline'> Places</button>
+            <input type="range" class='slider' id="placesThreshold" oninput="filterPlaces(this.value)" min="0" max="99" value="75">
+            <br>
             <button class="layer-button active" id='buildings', onclick="toggleLayerGroup('buildings')"><img src="img/overture.png" class='inline'> Buildings</button>
                 <label id="osm_building" for="osm"><input type="checkbox" checked="checked" name="osm" onclick="toggleLayer('osm_building')" value="osm_building"> OSM</label>
                 <label id="msft_building" for="msft"><input type="checkbox" checked="checked"  name="msft" onclick="toggleLayer('msft_building')" value="msft_building"> MSFT</label>
                 <label id="esri_building" for="esri"><input type="checkbox" checked="checked"  name="esri" onclick="toggleLayer('esri_building')" value="esri_building">Esri</label>
-            <br>
-            <button class="layer-button active" id='places', onclick="toggleLayerGroup('places')"><img src="img/overture.png" class='inline'> Places</button>
-            <input type="range" class='slider' id="placesThreshold" oninput="filterPlaces(this.value)" min="0" max="99" value="75">
+
             <br><hr>
             <button class="layer-button active" id='landcover' onclick="toggleLayerGroup('landcover')"><img src="img/daylight.png" class='inline'> Land</button>
             <button class="layer-button active" id='water' onclick="toggleLayerGroup('water')"><img src="img/daylight.png" class='inline'> Water</button>
