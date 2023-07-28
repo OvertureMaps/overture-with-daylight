@@ -131,6 +131,13 @@
                 color: aliceblue;
                 border-radius: 4px;
             }
+
+            img.inline{
+                margin-bottom: -10px;
+                margin-right: 10px;
+                padding: 0;
+                height: 2em;
+            }
         </style>
     </head>
 
@@ -143,11 +150,13 @@
     <div class="box">
         <!-- Individual buttons for layer control -->
         <div class="layer-control">
+            <img src="img/overture.png" class='inline'>
             <button class="layer-button active" id='buildings', onclick="toggleLayerGroup('buildings')">Buildings</button>
             <button class="layer-button active" id='roads', onclick="toggleLayerGroup('roads')">Roads</button>
             <button class="layer-button active" id='places', onclick="toggleLayerGroup('places')">Places</button>
             <input type="range" class='slider' id="placesThreshold" oninput="filterPlaces(this.value)" min="0" max="99" value="75">
             <br><hr>
+            <img src="img/daylight.png" class='inline'>
             <button class="layer-button active" id='landcover' onclick="toggleLayerGroup('landcover')">Land</button>
             <button class="layer-button active" id='water' onclick="toggleLayerGroup('water')">Water</button>
             <button class="layer-button active" id='placenames' onclick="toggleLayerGroup('placenames')">Placenames</button>
