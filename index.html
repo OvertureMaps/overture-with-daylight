@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Overture Data</title>
+    <meta property="og:description" content="" />
+    <meta charset='utf-8'>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel='stylesheet' href='https://unpkg.com/maplibre-gl@3.2.1/dist/maplibre-gl.css' crossorigin="anonymous"><link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Londrina+Solid:wght@300&display=swap" rel="stylesheet">
+    </script>
+    <script src='https://unpkg.com/maplibre-gl@3.2.1/dist/maplibre-gl.js' crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/pmtiles@2.5.0/dist/index.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body,
+        #map {
+            height: 100%;
+        }
+
+        /* Modified styles for the header */
+        header {
+            text-align: left;
+            padding: 10px;
+            background-color: #272b30;
+            height: 30px;
+            /* Set the height to half the original size */
+        }
+
+        /* Styles for the title */
+        h1 {
+            color: aliceblue;
+            margin: 0;
+            /* Remove margin to avoid extra spacing */
+        }
+
+
+
+
+        /* Styles for the buttons container */
+        .buttons-container {
+            position: absolute;
+            left: 10px;
+            bottom: 10px;
+        }
+             /* Styles for the buttons container */
+        .layer-control {
+            position: absolute;
+            left: 10px;
+            bottom: 60px;
+        }
+
+/* Styles for each button */
+.layer-button {
+    margin: 5px 0;
+    padding: 8px 12px;
+    background-color: #99A5A8;
+    color: black;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Londrina Solid', cursive;
+    font-size: larger;
+}
+
+        /* Styles for each button */
+        .action-button {
+            margin: 5px 0;
+            padding: 8px 12px;
+            background-color: #99A5A8;
+            color: black;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            font-family: 'Londrina Solid', cursive;
+            font-size: larger;
+        }
+
+        /* Styles for each button */
+        .zoom-button {
+            margin: 5px 0;
+            padding: 8px 12px;
+            background-color: #99A5A8;
+            color: black;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            font-family: 'Londrina Solid', cursive;
+            font-size: larger;
+        }
+
+
+    </style>
+</head>
+
+<body>
+    <!-- The header -->
+    <header>
+        <h1>Overture + Daylight</h1>
+    </header>
+    <div id="map"></div>
+
+    <!-- Individual buttons for layer control -->
+    <div class="layer-control">
+        <button class="layer-button" onclick="toggleLayerGroup('buildings')">Toggle Buildings</button>
+        <button class="layer-button" onclick="toggleLayerGroup('places')">Toggle Places</button>
+        <button class="layer-button" onclick="toggleLayerGroup('roads')">Toggle Roads</button>
+        <button class="layer-button" onclick="toggleLayerGroup('landcover')">Toggle Land</button>
+        <button class="layer-button" onclick="toggleLayerGroup('water')">Toggle Water</button>
+    </div>
+
+
+    <!-- Buttons container -->
+    <div class="buttons-container">
+        <!-- Buttons for different cities -->
+        <button class="zoom-button" onclick="zoomToCity([-122.332027, 47.603323])">Seattle, WA</button>
+        <button class="zoom-button" onclick="zoomToCity([-122.674195, 45.520247])">Portland, Oregon</button>
+        <button class="zoom-button" onclick="zoomToCity([-123.121644, 49.282730])">Vancouver, BC</button>
+        <button class="zoom-button" onclick="zoomToCity([-122.444290, 47.252877])">Tacoma, WA</button>
+        <button class="zoom-button" onclick="zoomToCity([-123.035094, 44.942897])">Salem, Oregon</button>
+
+        <button class="action-button" onclick="pitchAndToggleLayers()">Extruded Buildings View</button>
+        <button class="action-button" onclick="resetMap()">Reset Map View</button>
+
+    </div>
+    <script>
+        // add the PMTiles plugin to the maplibregl global.
+        let protocol = new pmtiles.Protocol();
+        maplibregl.addProtocol("pmtiles", protocol.tile);
+
+        let roadsurl = "roads.pmtiles";
+        let placesurl = "places.pmtiles";
+        let buildingsurl = "buildings_z13.pmtiles";
+        let landurl = "land.pmtiles";
+        let waterurl = "water.pmtiles";
+        let placenamesurl = "placenames.pmtiles";
+
+        const map = new maplibregl.Map({
+            center: [-122.332027, 47.603323],
+            zoom: 14,
+            container: 'map',
+            antialias: true,
+            attributionControl: true,
+            style: {
+                version: 8,
+                glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
+                sources: {
+                    roads: {
+                        type: "vector",
+                        url: "pmtiles://" + roadsurl,
+                        attribution: "Overture, Daylight, OSM, Tom Tom"
+                    },
+                    buildings: {
+                        type: "vector",
+                        url: "pmtiles://" + buildingsurl,
+                        maxzoom: 13
+                    },
+                    land: {
+                        type: "vector",
+                        url: "pmtiles://" + landurl
+                    },
+                    water: {
+                        type: "vector",
+                        url: "pmtiles://" + waterurl
+                    },
+                    places: {
+                        type: "vector",
+                        url: "pmtiles://" + placesurl
+                    },
+                    placenames: {
+                        type: "vector",
+                        url: "pmtiles://" + placenamesurl
+                    }
+                },
+                layers: [
+                    {
+                        "id": "background",
+                        "type": "background",
+                        "minzoom": 0,
+                        "maxzoom": 24,
+                        "paint": {
+                            "background-color": "hsl(221,39%,26%)"
+                        }
+                    },
+                    {
+                        "id": "land",
+                        "type": "fill",
+                        "source": 'land',
+                        "source-layer": 'land',
+                        "filter":["match", ["get", "class"], ["land"], true, false],
+                        "minzoom": 0,
+                        "maxzoom": 24,
+                        "paint": {
+                            "fill-color": "hsl(210, 10%, 17%)"
+                        }
+                    },
+                    {
+                        "id": "sand",
+                        "type": "fill",
+                        "source": 'land',
+                        "source-layer": 'land',
+                        "filter":["match", ["get", "class"], ["sand"], true, false],
+                        "minzoom": 0,
+                        "maxzoom": 24,
+                        "paint": {
+                            "fill-color": "hsl(53, 10%, 17%)"
+                        }
+                    },
+                    {
+                        "id": "wetland",
+                        "type": "fill",
+                        "source": 'land',
+                        "source-layer": 'land',
+                        "filter":["match", ["get", "class"], ["wetland"], true, false],
+                        "minzoom": 0,
+                        "maxzoom": 24,
+                        "paint": {
+                            "fill-color": "hsl(190, 26%, 18%)"
+                        }
+                    },
+                    {
+                        "id": "forest",
+                        "type": "fill",
+                        "source": 'land',
+                        "source-layer": 'land',
+                        "filter":["match", ["get", "class"], ["forest", "grass", "scrub"], true, false],
+                        "minzoom": 0,
+                        "maxzoom": 24,
+                        "paint": {
+                            "fill-color": "hsl(189, 24%, 17%)"
+                        }
+                    },
+
+                    {
+                        "id": "water",
+                        "type": "fill",
+                        "source": "water",
+                        "source-layer": "water",
+                        "minzoom": 0,
+                        "maxzoom": 24,
+                        "paint": {
+                            "fill-color": "hsl(221,39%,36%)"
+                        }
+                    }, {
+                        "id": "footwayCasing",
+                        "type": "line",
+                        "source": "roads",
+                        "source-layer": "roads",
+                        "minzoom": 15,
+                        "maxzoom": 24,
+                        "filter": ["match", ["get", "road_class"], ["footway"], true, false],
+                        "layout": { "line-cap": "round", "line-join": "round" },
+                        "paint": {
+                            "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 0.25, 20, 1.3],
+                            "line-gap-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 0.5, 16, 3, 22, 25],
+                            "line-color": "hsl(219,12%,15%)"
+                        }
+                    },
+                    {
+                        "id": "footway",
+                        "type": "line",
+                        "source": "roads",
+                        "source-layer": "roads",
+                        "minzoom": 15,
+                        "maxzoom": 24,
+                        "filter":
+                            ["match", ["get", "road_class"], ["footway"], true, false],
+                        "layout": { "line-cap": "round", "line-join": "round" },
+                        "paint": {
+                            "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 0.5, 16, 3, 22, 25],
+                            "line-color": ["step", ["zoom"], "hsl(219,8%,27%)", 17, "hsl(219,8%,23%)"]
+                        }
+                    },
+                    {
+                        "id": "parkingAisleUnknownCasing",
+                        "type": "line",
+                        "source": "roads", "source-layer": "roads",
+                        "minzoom": 14, "maxzoom": 24,
+                        "filter": ["match", ["get", "road_class"], ["parkingAisle", "unknown"], true, false],
+                        "layout": { "line-cap": "round", "line-join": "round" },
+                        "paint": { "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 0.25, 20, 1.3], "line-gap-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 0.5, 16, 3.5, 22, 75], "line-color": ["step", ["zoom"], "hsl(219,8%,15%)", 10, "hsl(219,10%,15%)", 11, "hsl(219,12%,15%)", 12, "hsl(219,12%,20%)", 16, "hsl(219,12%,20%)"] }
+                    },
+                    {
+                        "id": "residentailCasing",
+                        "type": "line",
+                        "source": "roads", "source-layer": "roads",
+                        "minzoom": 12, "maxzoom": 24,
+                        "filter": ["match", ["get", "road_class"], ["residential"], true, false],
+                        "layout": { "line-cap": "round", "line-join": "round" },
+                        "paint": { "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 0.75, 20, 1.3], "line-gap-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 1, 16, 6, 22, 125], "line-color": ["step", ["zoom"], "hsl(219,8%,15%)", 10, "hsl(219,10%,15%)", 11, "hsl(219,12%,15%)", 12, "hsl(219,12%,20%)", 16, "hsl(219,12%,20%)"] }
+                    },
+                    {
+                        "id": "secondaryTertiaryCasing",
+                        "type": "line",
+                        "source": "roads", "source-layer": "roads",
+                        "minzoom": 11, "maxzoom": 24,
+                        "filter": ["match", ["get", "road_class"], ["secondary", "tertiary"], true, false],
+                        "paint": { "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 1, 20, 1.3], "line-gap-width": ["interpolate", ["exponential", 1.5], ["zoom"], 10, 0.5, 12, 2.2, 16, 6.6, 22, 160], "line-color": ["step", ["zoom"], "hsl(219,10%,15%)", 11, "hsl(219,12%,15%)", 12, "hsl(219,12%,15%)", 13, "hsl(219,12%,15%)"] }
+                    },
+                    {
+                        "id": "primaryCasing",
+                        "type": "line",
+                        "source": "roads", "source-layer": "roads",
+                        "minzoom": 8, "maxzoom": 24,
+                        "filter": ["match", ["get", "road_class"], ["primary"], true, false],
+                        "layout": { "line-cap": ["step", ["zoom"], "butt", 16, "round"], "line-join": ["step", ["zoom"], "miter", 16, "round"] },
+                        "paint": { "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 1, 20, 1.4], "line-gap-width": ["interpolate", ["exponential", 1.5], ["zoom"], 8, 0.5, 12, 3.1, 16, 9.3, 22, 175], "line-color": ["step", ["zoom"], "hsl(219,10%,15%)", 10, "hsl(219,10%,15%)", 11, "hsl(219,12%,15%)", 12, "hsl(219,8%,15%)", 16, "hsl(219,12%,15%)"] }
+                    },
+
+
+                    {
+                        "id": "parkingAisleUnknown",
+                        "type": "line",
+                        "source": "roads",
+                        "source-layer": "roads",
+                        "minzoom": 14,
+                        "maxzoom": 24,
+                        "filter": ["match", ["get", "road_class"], ["parkingAisle", "unknown"], true, false],
+                        "layout": {
+                            "line-cap": "round",
+                            "line-join": "round"
+                        },
+                        "paint": {
+                            "line-width": [
+                                "interpolate",
+                                [
+                                    "exponential",
+                                    1.5
+                                ],
+                                [
+                                    "zoom"
+                                ],
+                                12,
+                                0.5,
+                                16,
+                                3.5,
+                                22,
+                                75
+                            ],
+                            "line-color": [
+                                "step",
+                                [
+                                    "zoom"
+                                ],
+                                "hsl(219,10%,35%)",
+                                10,
+                                "hsl(219,10%,30%)",
+                                11,
+                                "hsl(219,11%,25%)",
+                                12,
+                                "hsl(219,11%,30%)",
+                                16,
+                                "hsl(219,12%,30%)"
+                            ]
+                        }
+                    },
+                    {
+                        "id": "residential",
+                        "type": "line",
+                        "source": "roads",
+                        "source-layer": "roads",
+                        "minzoom": 12,
+                        "maxzoom": 24,
+                        "filter": ["match", ["get", "road_class"], ["residential"], true, false],
+                        "layout": { "line-cap": ["step", ["zoom"], "butt", 13, "round"], "line-join": ["step", ["zoom"], "miter", 13, "round"] },
+                        "paint": {
+                            "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 1, 16, 6, 22, 125],
+                            "line-color": ["step", ["zoom"], "hsl(219,10%,35%)", 10, "hsl(219,10%,30%)", 11, "hsl(219,11%,25%)", 12, "hsl(219,11%,30%)", 16, "hsl(219,12%,30%)"]
+                        }
+                    },
+                    {
+                        "id": "secondaryTertiary",
+                        "type": "line",
+                        "source": "roads",
+                        "source-layer": "roads",
+                        "minzoom": 10,
+                        "maxzoom": 24,
+                        "filter": ["match", ["get", "road_class"], ["secondary", "tertiary"], true, false],
+                        "layout": { "line-cap": ["step", ["zoom"], "butt", 13, "round"], "line-join": ["step", ["zoom"], "miter", 13, "round"] },
+                        "paint": {
+                            "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 10, 0.5, 12, 2.2, 16, 6.6, 22, 160],
+                            "line-color": ["step", ["zoom"], "hsl(219,10%,30%)", 11, "hsl(219,11%,25%)", 12, "hsl(219,11%,25%)", 16, "hsl(219,12%,30%)"]
+                        }
+                    },
+
+                    {
+                        "id": "primary",
+                        "type": "line",
+                        "source": "roads",
+                        "source-layer": "roads",
+                        "minzoom": 8,
+                        "maxzoom": 24,
+                        "filter":
+                            ["match", ["get", "road_class"], ["primary"], true, false],
+                        "layout": {
+                            "line-cap": ["step", ["zoom"], "butt", 13, "round"],
+                            "line-join": ["step", ["zoom"], "miter", 13, "round"]
+                        },
+                        "paint": {
+                            "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 8, 0.5, 12, 3.1, 16, 9.3, 22, 175],
+                            "line-color": ["step", ["zoom"], "hsl(219,10%,45%)", 10, "hsl(219,10%,40%)", 11, "hsl(219,11%,35%)", 12, "hsl(219,11%,35%)", 16, "hsl(219,12%,30%)"]
+                        }
+                    },
+                    {
+                        "id": "motorwayCasing",
+                        "type": "line",
+                        "source": "roads",
+                        "source-layer": "roads",
+                        "minzoom": 6,
+                        "maxzoom": 24,
+                        "filter": ["match", ["get", "road_class"], ["motorway"], true, false],
+                        "layout": {
+                            "line-cap": ["step", ["zoom"], "butt", 13, "round"],
+                            "line-join": ["step", ["zoom"], "miter", 13, "round"]
+                        },
+                        "paint": {
+                            "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 1, 20, 1.4],
+                            "line-gap-width": ["interpolate", ["exponential", 1.5], ["zoom"], 6, 0.5, 12, 3.3, 16, 9.9, 22, 175],
+                            "line-color": "hsl(219,8%,15%)"
+                        }
+                    },
+                    {
+                        "id": "motorway",
+                        "type": "line",
+                        "source": "roads",
+                        "source-layer": "roads",
+                        "minzoom": 6,
+                        "maxzoom": 24,
+                        "filter": ["match", ["get", "road_class"], ["motorway"], true, false],
+                        "layout": {
+                            "line-cap": ["step", ["zoom"], "butt", 12, "round"],
+                            "line-join": ["step", ["zoom"], "miter", 12, "round"]
+                        },
+                        "paint": {
+                            "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 6, 0.5, 12, 3.3, 16, 9.9, 22, 175],
+                            "line-color": ["step", ["zoom"], "hsl(219,12%,50%)", 8, "hsl(219,12%,50%)", 10, "hsl(219,10%,45%)", 11, "hsl(219,10%,45%)", 12, "hsl(219,10%,45%)", 16, "hsl(219,8%,38%)"]
+                        }
+                    },
+
+                    {
+                        "id": 'buildingOffset',
+                        "type": "fill",
+                        "source": 'buildings',
+                        "source-layer": 'bulidings',
+                        "paint": {
+                            "fill-color": ["match",
+                                ["get", "class"],
+                                ["commercial"], "hsl(193,14%,19%)",
+                                "hsl(193,8%,15%)"]
+                        },
+                        "fill-translate": ["interpolate", ["linear"], ["zoom"],
+                            12, ["literal", [0.5, 0.5]],
+                            16, ["literal", [1, 1]],
+                            20, ["literal", [2, 2]]
+                        ]
+
+                    },
+                    {
+                        "id": 'building',
+                        "type": "fill",
+                        "source": 'buildings',
+                        "source-layer": 'bulidings',
+                        "paint": {
+                            "fill-color": ["match",
+                                ["get", "class"],
+                                ["commercial"], "hsl(193,14%,24%)",
+                                "hsl(193,8%,20%)"],
+                            "fill-outline-color": ["match",
+                                ["get", "class"],
+                                ["commercial"], "hsl(193,14%,28%)",
+                                "hsl(193,8%,25%)"]
+                        }
+                    },
+                    {
+                        "id": 'buildingExtruded',
+                        "type": "fill-extrusion",
+                        "source": 'buildings',
+                        "source-layer": 'bulidings',
+                        "layout": {
+                            "visibility": "none"
+                        },
+                        "paint": {
+                            "fill-extrusion-color": ["match",
+                                ["get", "class"],
+                                ["commercial"], "hsl(193,14%,24%)",
+                                "hsl(193,8%,20%)"],
+                            "fill-extrusion-base": 0,
+                            "fill-extrusion-height": ["case",
+                                ["has", "height"],
+                                ["to-number", ["get", "height"]], 3.2]
+                        }
+                    },
+                    {
+                        "id": "residentialLabel",
+                        "type": "symbol",
+                        "source": "roads",
+                        "source-layer": "roads",
+                        "minzoom": 13,
+                        "maxzoom": 24,
+                        "filter": ["match", ["get", "road_class"], ["residential", "unknown"], true, false],
+                        "layout": {
+                            "text-size": ["interpolate", ["linear"], ["zoom"],
+                                13, 9,
+                                18, ["match", ["get", "class"], ["access", "path"], 12, 14]],
+                            "text-max-angle": 30,
+                            "symbol-spacing": ["interpolate", ["linear"], ["zoom"], 13, 200, 16, 400],
+                            "text-field": ["to-string", ["get", "common_name"]],
+                            "text-font": ["Noto Sans Regular"],
+                            "symbol-placement": "line", "text-padding": 5
+                        },
+                        "paint": {
+                            "text-color": "hsl(0, 0%, 70%)",
+                            "text-halo-color": "hsl(210,10%,12%)",
+                            "text-halo-width": 1
+                        }
+                    },
+                    {
+                        "id": "highwayLabel",
+                        "type": "symbol",
+                        "source": "roads",
+                        "source-layer": "roads",
+                        "minzoom": 13,
+                        "maxzoom": 24,
+                        "filter": ["match", ["get", "road_class"], ["motorway", "primary", "secondary", "tertiary"], true, false],
+                        "layout": {
+                            "text-size": ["interpolate", ["linear"], ["zoom"],
+                                13, 11,
+                                18, ["match", ["get", "class"], ["access", "path"], 12, 14]],
+                            "text-max-angle": 30,
+                            "symbol-spacing": ["interpolate", ["linear"], ["zoom"], 13, 200, 16, 400],
+                            "text-field": ["get", "common_name"],
+                            "text-font": ["Noto Sans Bold"],
+                            "symbol-placement": "line", "text-padding": 5
+                        },
+                        "paint": {
+                            "text-color": "hsl(0, 0%, 80%)",
+                            "text-halo-color": "hsl(210,10%,12%)",
+                            "text-halo-width": 1
+                        }
+                    },
+                    {
+                        "id": "buildingLabel",
+                        "type": "symbol",
+                        "source": "buildings", "source-layer": "bulidings",
+                        "filter": ["has", "name"],
+                        "minzoom": 15,
+                        "layout": {
+                            "text-field": ["get", "name"],
+                            "text-font": ["Noto Sans Regular"],
+                            "text-max-width": 5, "text-size": 9.3,
+                            "text-line-height": 1,
+                            "icon-image": "building",
+                            "text-justify": "auto",
+                            "text-variable-anchor": ["literal", ["right", "left"]],
+                            "text-radial-offset": 0.5
+                        },
+                        "paint": {
+                            "text-color": "hsl(193, 8%, 63%)",
+                            "text-halo-color": "hsl(193,8%,13%)",
+                            "text-halo-width": 1
+                        }
+                    },
+                    {
+                        "id": "placesLabel",
+                        "type": "symbol",
+                        "source": "places",
+                        "source-layer": "places",
+                        "filter": ["all",
+                            ["has", "common_name"]
+                        ],
+                        "minzoom": 16, "maxzoom": 24,
+                        "layout": {
+                            "text-field": ["get", "common_name"],
+                            "text-font": ["Noto Sans Bold"],
+                            "text-max-width": 5,
+                            "text-size": 10,
+                            "text-line-height": 1,
+                            "icon-image": "places",
+                            "text-justify": "auto",
+                            "text-variable-anchor": ["literal", ["right", "left"]],
+                            "text-radial-offset": 0.8,
+                            "text-padding": 0
+                        },
+                        "paint": {
+                            "text-color": "hsl(245, 50%, 80%)",
+                            "text-halo-color": "hsl(193,8%,13%)", "text-halo-width": 1
+                        }
+                    },
+                    {
+                        "id": "placeHighZoom",
+                        "type": "symbol",
+                        "source": "placenames",
+                        "source-layer": "placenames",
+                        "minzoom": 9,
+                        "maxzoom": 24,
+                        "filter": ["all", ["has", "name"], ["==", "class", "local"]],
+                        "layout": {
+                            "text-field": ["get", "name"],
+                            "text-font": ["Noto Sans Bold"],
+                            "text-size": [
+                                "step",
+                                ["zoom"],
+                                14,
+                                10,
+                                ["match", ["get", "subclass"], ["borough"], 14, ["suburb"], 12, 0],
+                                12,
+                                ["match", ["get", "subclass"], ["borough"], 16, ["suburb"], 14, ["neighborhood"], 10, 0],
+                                14,
+                                ["match", ["get", "subclass"], ["borough"], 18, ["suburb"], 16, ["neighborhood"], 12, 0],
+                                15,
+                                ["match", ["get", "subclass"], ["borough"], 20, ["suburb"], 18, ["neighborhood"], 14, 0],
+                                16,
+                                ["match", ["get", "subclass"], ["borough"], 20, ["suburb"], 18, ["neighborhood"], 14, ["block"], 12, 0]
+                            ],
+                            "text-transform": ["step", ["zoom"], "none", 11, "uppercase"],
+                            "text-max-width": 6,
+                            "symbol-avoid-edges": true,
+                            "symbol-sort-key": ["get", "sort_key"],
+                            "text-padding": 10,
+                            "text-justify": "auto"
+                        },
+                        "paint": {
+                            "text-color": [
+                                "interpolate",
+                                ["linear"],
+                                ["zoom"],
+                                9,
+                                "hsl(0, 0%, 70%)",
+                                10,
+                                ["match", ["get", "subclass"], ["borough"], "hsl(0, 0%, 70%)", ["suburb"], "hsl(0, 0%, 70%)", "hsl(0, 0%, 70%)"],
+                                11,
+                                ["match", ["get", "subclass"], ["borough"], "hsl(0, 0%, 70%)", ["suburb", "neighborhood"], "hsl(0, 0%, 70%)", "hsl(0, 0%, 70%)"],
+                                12,
+                                "hsl(0, 0%, 70%)",
+                                14,
+                                ["match", ["get", "subclass"], ["borough", "suburb"], "hsl(0, 0%, 70%)", ["neighborhood"], "hsl(0, 0%, 80%)", "hsl(0, 0%, 70%)"],
+                                16,
+                                ["match", ["get", "subclass"], ["borough", "block"], "hsl(0, 0%, 70%)", ["suburb", "neighborhood"], "hsl(0, 0%, 70%)", "hsl(0, 0%, 70%)"]
+                            ],
+                            "text-halo-color": "hsl(210,10%,12%)",
+                            "text-halo-width": ["match", ["get", "subclass"], ["megacity", "metropolis"], 1, ["city", "municipality"], 1, 1]
+                        }
+                    },
+                    {
+                        "id": "label-place-midzoom",
+                        "type": "symbol",
+                        "source": "placenames",
+                        "source-layer": "placenames",
+                        "minzoom": 8,
+                        "maxzoom": 24,
+                        "filter": [
+                            "all",
+                            ["has", "name"],
+                            [
+                                "step",
+                                ["zoom"],
+                                ["==", "$type", "Point"],
+                                8,
+                                ["match", ["get", "class"], ["settlement"], true, false],
+                                9,
+                                ["match", ["get", "class"], ["urban", "settlement"], true, false]
+                            ]
+                        ],
+                        "layout": {
+                            "text-field": ["get", "name"],
+                            "text-font": ["Noto Sans Bold"],
+                            "text-size": [
+                                "step",
+                                ["zoom"],
+                                10,
+                                9,
+                                ["match", ["get", "subclass"], ["megacity"], 20, ["metropolis"], 18, ["city"], 16, ["municipality"], 14, ["town"], 10, 0],
+                                10,
+                                ["match", ["get", "subclass"], ["megacity"], 22, ["metropolis"], 20, ["city"], 18, ["municipality"], 16, ["town"], 12, 0],
+                                12,
+                                [
+                                    "match",
+                                    ["get", "subclass"],
+                                    ["megacity"],
+                                    22,
+                                    ["metropolis"],
+                                    20,
+                                    ["city"],
+                                    18,
+                                    ["municipality"],
+                                    16,
+                                    ["town"],
+                                    12,
+                                    ["village"],
+                                    10,
+                                    0
+                                ],
+                                14,
+                                ["match", ["get", "subclass"], ["megacity"], 22, ["metropolis"], 20, ["city"], 18, ["municipality"], 16, ["town"], 14, ["village", "hamlet"], 12, 0],
+                                15,
+                                ["match", ["get", "subclass"], ["megacity"], 22, ["metropolis"], 20, ["city"], 18, ["municipality"], 16, ["town"], 14, ["village", "hamlet"], 14, 0],
+                                16,
+                                ["match", ["get", "subclass"], ["village", "hamlet"], 16, 0]
+                            ],
+                            "text-transform": ["step", ["zoom"], "none", 11, "uppercase"],
+                            "text-padding": ["step", ["zoom"], 10, 9, 8, 10, 5, 12, 3],
+                            "text-max-width": 6,
+                            "symbol-avoid-edges": true,
+                            "symbol-sort-key": ["get", "sort_key"],
+                            "text-justify": "auto"
+                        },
+                        "paint": {
+                            "text-color": [
+                                "interpolate",
+                                ["linear"],
+                                ["zoom"],
+                                8,
+                                ["match", ["get", "subclass"], ["town"], "hsl(0, 0%, 70%)", "hsl(0, 0%, 70%)"],
+                                9,
+                                [
+                                    "match",
+                                    ["get", "subclass"],
+                                    ["megacity", "metropolis", "city"],
+                                    "hsl(0, 0%, 80%)",
+                                    ["town", "municipality"],
+                                    "hsl(0, 0%, 70%)",
+                                    "hsl(0, 0%, 70%)"
+                                ],
+                                10,
+                                [
+                                    "match",
+                                    ["get", "subclass"],
+                                    ["megacity", "metropolis"],
+                                    "hsl(0, 0%, 80%)",
+                                    ["town", "city", "municipality"],
+                                    "hsl(0, 0%, 70%)",
+                                    "hsl(0, 0%, 70%)"
+                                ],
+                                11,
+                                [
+                                    "match",
+                                    ["get", "subclass"],
+                                    ["megacity", "metropolis"],
+                                    "hsl(0, 0%, 80%)",
+                                    ["town", "village", "city", "municipality"],
+                                    "hsl(0, 0%, 70%)",
+                                    "hsl(0, 0%, 70%)"
+                                ],
+                                12,
+                                [
+                                    "match",
+                                    ["get", "subclass"],
+                                    ["megacity", "metropolis"],
+                                    "hsl(0, 0%, 80%)",
+                                    ["town", "village", "city", "municipality"],
+                                    "hsl(0, 0%, 70%)",
+                                    "hsl(0, 0%, 70%)"
+                                ],
+                                14,
+                                "hsl(0, 0%, 70%)"
+                            ],
+                            "text-halo-color": "hsl(210,10%,12%)",
+                            "text-halo-width": ["match", ["get", "subclass"], ["megacity", "metropolis"], 1, ["city", "municipality"], 1, 1]
+                        }
+                    }
+
+
+
+
+
+                ]
+            }
+        });
+
+        map.on('load', () => {
+            // Load the first image
+            map.loadImage("img/building-dot.png", (error, image) => {
+                if (error) throw error;
+                map.addImage('building', image);
+            });
+
+            // Load the second image
+            map.loadImage("img/places-dot.png", (error, image) => {
+                if (error) throw error;
+                map.addImage('places', image);
+            });
+
+            // Continue adding more images if needed
+        });
+
+        map.addControl(new maplibregl.NavigationControl());
+
+        // Function to zoom to a specific city
+        function zoomToCity(coordinates) {
+            map.jumpTo({
+                center: coordinates,
+                zoom: 14
+            });
+        }
+
+function toggleLayer(layerID) {
+    const layer = map.getLayer(layerID);
+    if (layer) {
+        const visibility = map.getLayoutProperty(layerID, 'visibility');
+        if (visibility === 'visible') {
+            map.setLayoutProperty(layerID, 'visibility', 'none');
+        } else {
+            map.setLayoutProperty(layerID, 'visibility', 'visible');
+        }
+    }
+}
+
+// Function to toggle an entire layer group on/off based on checkbox status
+function toggleLayerGroup(layerGroup) {
+    const layers = {
+        buildings: ['buildingLabel', 'buildingOffset', 'building'],
+        places: ['placesLabel'],
+        roads: ['motorway', 'motorwayCasing', 'primary'],
+        landcover: ['sand', 'wetland','forest'],
+        water: ['water']
+    };
+
+    layers[layerGroup].forEach(layer => {
+        toggleLayer(layer); // Call the existing toggleLayer function to toggle individual layers
+    });
+}
+
+        function pitchAndToggleLayers() {
+            // Pitch the map 50 degrees
+            map.setPitch(50);
+
+            // Turn on the "buildingExtruded" layer
+            map.setLayoutProperty("buildingExtruded", 'visibility', 'visible');
+
+            // Turn off the layers "buildingLabel", "placesLabel", "buildingOffset"
+            map.setLayoutProperty("buildingLabel", 'visibility', 'none');
+            map.setLayoutProperty("building", 'visibility', 'none');
+            map.setLayoutProperty("placesLabel", 'visibility', 'none');
+            map.setLayoutProperty("buildingOffset", 'visibility', 'none');
+        }
+
+
+        // Function to reset the map view to default
+        function resetMap() {
+            // Reset pitch to 0 degrees
+            map.setPitch(0);
+
+            // Turn off the "buildingExtruded" layer
+            map.setLayoutProperty("buildingExtruded", 'visibility', 'none');
+
+            // Turn on the layers "buildingLabel", "placesLabel", "buildingOffset"
+            map.setLayoutProperty("buildingLabel", 'visibility', 'visible');
+            map.setLayoutProperty("placesLabel", 'visibility', 'visible');
+            map.setLayoutProperty("building", 'visibility', 'visible');
+            map.setLayoutProperty("buildingOffset", 'visibility', 'visible');
+
+            // Reset the map center and zoom to the initial values
+            map.jumpTo({
+                center: [-122.332027, 47.603323],
+                zoom: 14
+            });
+        }
+
+    </script>
+</body>
+
+</html>
