@@ -24,15 +24,17 @@
             html,
             body,
             #map {
-                height: 100%;
+                height: 100%
             }
 
             /* Modified styles for the header */
             header {
                 text-align: left;
-                padding: 10px;
+                padding: 10px 25px;
                 background-color: #272b30;
-                height: 30px;
+                position: absolute;
+                top:0px;
+                z-index: 100;
                 /* Set the height to half the original size */
             }
 
@@ -138,6 +140,16 @@
                 padding: 0;
                 height: 2em;
             }
+            label{
+                margin: 5px 0;
+                padding: 1px 2px;
+                background-color: #272b30;
+                color: aliceblue;
+                border: none;
+                border-radius: 4px;
+                font-family: 'Londrina Solid', cursive;
+                font-size: larger;
+            }
         </style>
     </head>
 
@@ -150,9 +162,13 @@
     <div class="box">
         <!-- Individual buttons for layer control -->
         <div class="layer-control">
+            <img src="img/overture.png" class='inline'><button class="layer-button active" id='roads', onclick="toggleLayerGroup('roads')">Roads</button><br>
+            <img src="img/overture.png" class='inline'><button class="layer-button active" id='buildings', onclick="toggleLayerGroup('buildings')">Buildings</button>
+                <label id="osm_building" for="osm"><input type="checkbox" checked="checked" name="osm" onclick="toggleLayer('osm_building')" value="osm_building"> OSM</label>
+                <label id="msft_building" for="msft"><input type="checkbox" checked="checked"  name="msft" onclick="toggleLayer('msft_building')" value="msft_building"> MSFT</label>
+                <label id="esri_building" for="esri"><input type="checkbox" checked="checked"  name="esri" onclick="toggleLayer('esri_building')" value="esri_building">Esri</label>
+            <br>
             <img src="img/overture.png" class='inline'>
-            <button class="layer-button active" id='buildings', onclick="toggleLayerGroup('buildings')">Buildings</button>
-            <button class="layer-button active" id='roads', onclick="toggleLayerGroup('roads')">Roads</button>
             <button class="layer-button active" id='places', onclick="toggleLayerGroup('places')">Places</button>
             <input type="range" class='slider' id="placesThreshold" oninput="filterPlaces(this.value)" min="0" max="99" value="75">
             <br><hr>
@@ -202,7 +218,7 @@
         antialias: true,
         minZoom: 10,
         hash:true,
-        attributionControl: false,
+        // attributionControl: true,
         style: {
             version: 8,
             glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
@@ -210,33 +226,33 @@
                 roads: {
                     type: "vector",
                     url: "pmtiles://" + roadsurl,
-                    attribution: "Overture, Daylight, OSM, Tom Tom"
+                    // attribution: "Overture: OpenStreetMap, TomTom"
                 },
                 buildings: {
                     type: "vector",
                     url: "pmtiles://" + buildingsurl,
                     maxzoom: 13,
-                    attribution: "Overture, Daylight, OSM, Tom Tom"
+                    // attribution: "Overture: OpenStreetMap, Esri, Microsoft"
                 },
                 land: {
                     type: "vector",
                     url: "pmtiles://" + landurl,
-                    attribution: "Overture, Daylight, OSM, Tom Tom"
+                    // attribution: "Daylight, OpenStreetMap Contributors"
                 },
                 water: {
                     type: "vector",
                     url: "pmtiles://" + waterurl,
-                    attribution: "Overture, Daylight, OSM, Tom Tom"
+                    // attribution: "Daylight, OpenStreetMap Contributors"
                 },
                 places: {
                     type: "vector",
                     url: "pmtiles://" + placesurl,
-                    attribution: "Overture, Daylight, OSM, Tom Tom"
+                    // attribution: "Overture: Meta, Microsoft"
                 },
                 placenames: {
                     type: "vector",
                     url: "pmtiles://" + placenamesurl,
-                    attribution: "Overture, Daylight, OSM, Tom Tom"
+                    // attribution: "Daylight, OpenStreetMap Contributors"
                 }
             },
             layers: [
@@ -522,11 +538,70 @@
                     ]
 
                 },
+                // Breaking buildings out by source
+                // {
+                //     "id": 'building',
+                //     "type": "fill",
+                //     "source": 'buildings',
+                //     "source-layer": 'bulidings',
+                //     "paint": {
+                //         "fill-color": ["match",
+                //             ["get", "class"],
+                //             ["commercial"], "hsl(193,14%,24%)",
+                //             "hsl(193,8%,20%)"],
+                //         "fill-outline-color": ["match",
+                //             ["get", "class"],
+                //             ["commercial"], "hsl(193,14%,28%)",
+                //             "hsl(193,8%,25%)"]
+                //     }
+                // },
+
                 {
-                    "id": 'building',
+                    "id": 'osm_building',
                     "type": "fill",
                     "source": 'buildings',
                     "source-layer": 'bulidings',
+                    "filter": ["all",
+                        ["in", "OpenStreetMap", ["get","source"]]
+                    ],
+                    "paint": {
+                        "fill-color": ["match",
+                            ["get", "class"],
+                            ["commercial"], "hsl(193,14%,24%)",
+                            "hsl(193,8%,20%)"],
+                        "fill-outline-color": ["match",
+                            ["get", "class"],
+                            ["commercial"], "hsl(193,14%,28%)",
+                            "hsl(193,8%,25%)"]
+                    }
+                },
+                {
+                    "id": 'msft_building',
+                    "type": "fill",
+                    "source": 'buildings',
+                    "source-layer": 'bulidings',
+                    "filter": ["all",
+                        ["in", "Microsoft", ["get","source"]]
+                    ],
+                    "paint": {
+                        "fill-color": ["match",
+                            ["get", "class"],
+                            ["commercial"], "hsl(193,14%,24%)",
+                            "hsl(193,8%,20%)"],
+                        "fill-outline-color": ["match",
+                            ["get", "class"],
+                            ["commercial"], "hsl(193,14%,28%)",
+                            "hsl(193,8%,25%)"]
+                    }
+                },
+                {
+                    "id": 'esri_building',
+                    "type": "fill",
+                    "source": 'buildings',
+                    "source-layer": 'bulidings',
+                    "filter": ["all",
+                        ["in", "Esri", ["get","source"]]
+                    ],
                     "paint": {
                         "fill-color": ["match",
                             ["get", "class"],
@@ -834,7 +909,6 @@
             ]
         }
     });
-    map.addControl(new maplibregl.AttributionControl(), 'bottom-right');
 
     map.on('load', () => {
         // Load the first image
@@ -853,6 +927,12 @@
     });
 
     map.addControl(new maplibregl.NavigationControl());
+
+    map.addControl(new maplibregl.AttributionControl({
+        customAttribution: '<a href="https://overturemaps.org" target="_blank">&copy; OvertureMaps Foundation</a>, '+
+        '<a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a>, '+
+        '<a href="https://daylightmap.org/" target="_blank">Daylight Map Distribution</a>'
+    }),'bottom-right');
 
     // Function to zoom to a specific city
     function zoomToCity(coordinates) {
@@ -886,7 +966,7 @@
     // Function to toggle an entire layer group on/off based on checkbox status
     function toggleLayerGroup(layerGroup) {
         const layers = {
-            buildings: ['buildingLabel', 'buildingOffset', 'building'],
+            buildings: ['buildingLabel', 'buildingOffset', 'building','esri_building','osm_building','msft_building'],
             places: ['placesLabel'],
             roads: ['highwayLabel', 'residentialLabel', 'motorway', 'motorwayCasing', 'primary', 'secondaryTertiary', 'residential', 'parkingAisleUnknown', 'footway', 'primaryCasing', 'secondaryTertiaryCasing', 'residentialCasing', 'parkingAisleUnknownCasing', 'footwayCasing'],
             landcover: ['land','sand', 'wetland', 'forest'],
@@ -904,14 +984,24 @@
             if (layerGroup == 'places'){
                document.getElementById('placesThreshold').className = 'slider'
             }
+            else if
+                (layerGroup == 'buildings'){
+                    document.getElementById('osm_building').className = ''
+                    document.getElementById('msft_building').className = ''
+                    document.getElementById('esri_building').className = ''
+                }
+
         }else{
             document.getElementById(layerGroup).className = 'layer-button'
             if (layerGroup == 'places'){
                document.getElementById('placesThreshold').className += ' hidden'
-            }
+            }else if
+                (layerGroup == 'buildings'){
+                    document.getElementById('osm_building').className += ' hidden'
+                    document.getElementById('msft_building').className += ' hidden'
+                    document.getElementById('esri_building').className += ' hidden'
+                }
         }
-
-
     }
 
     function pitchAndToggleLayers() {
@@ -923,7 +1013,9 @@
 
         // Turn off the layers "buildingLabel", "placesLabel", "buildingOffset"
         map.setLayoutProperty("buildingLabel", 'visibility', 'none');
-        map.setLayoutProperty("building", 'visibility', 'none');
+        map.setLayoutProperty("esri_building", 'visibility', 'none');
+        map.setLayoutProperty("msft_building", 'visibility', 'none');
+        map.setLayoutProperty("osm_building", 'visibility', 'none');
         map.setLayoutProperty("placesLabel", 'visibility', 'none');
         map.setLayoutProperty("buildingOffset", 'visibility', 'none');
     }
@@ -940,7 +1032,9 @@
         // Turn on the layers "buildingLabel", "placesLabel", "buildingOffset"
         map.setLayoutProperty("buildingLabel", 'visibility', 'visible');
         map.setLayoutProperty("placesLabel", 'visibility', 'visible');
-        map.setLayoutProperty("building", 'visibility', 'visible');
+        map.setLayoutProperty("esri_building", 'visibility', 'visible');
+        map.setLayoutProperty("msft_building", 'visibility', 'visible');
+        map.setLayoutProperty("osm_building", 'visibility', 'visible');
         map.setLayoutProperty("buildingOffset", 'visibility', 'visible');
 
         // Reset the map center and zoom to the initial values
