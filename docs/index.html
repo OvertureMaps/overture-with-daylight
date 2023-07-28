@@ -929,6 +929,36 @@
         });
 
         // Continue adding more images if needed
+
+        // Add interactivity:
+        // Create a popup, but don't add it to the map yet.
+        const popup = new maplibregl.Popup({
+            closeButton: true,
+            closeOnClick: true
+        });
+
+        //Inspector:
+        [
+            'residential','footway','primary','motorway','secondaryTertiary','parkingAisleUnknown',
+            'osm_building','esri_building','msft_building'
+        ].forEach(function(layer){
+            map.on('mouseenter', layer, (e) => {
+                map.getCanvas().style.cursor = 'pointer';
+            });
+
+            map.on('mouseout', layer, (e) => {
+                map.getCanvas().style.cursor = '';
+            });
+
+            map.on('click', layer, (e) => {
+                if (e.features.length > 0) {
+                    popup.setLngLat(e.lngLat)
+                        .setHTML(JSON.stringify(e.features[0].properties, null, 2))
+                        .addTo(map);
+                }
+            });
+        })
+
     });
 
     map.addControl(new maplibregl.NavigationControl());
@@ -946,6 +976,11 @@
             zoom: 14
         });
     }
+
+
+
+
+
 
     function filterPlaces(val){
         map.setFilter('placesLabel',["all",
