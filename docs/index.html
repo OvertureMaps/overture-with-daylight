@@ -14,6 +14,8 @@
     <script src='https://unpkg.com/maplibre-gl@3.2.1/dist/maplibre-gl.js' crossorigin="anonymous"></script>
     <script src="https://unpkg.com/pmtiles@2.5.0/dist/index.js"></script>
 
+    <script src="styles/buildings.js"></script>
+
     <head>
         <style>
             body {
@@ -87,6 +89,11 @@
             .layer-button.active {
                 background-color: #272b30;
                 color: aliceblue;
+            }
+
+            .sub-layer{
+                margin: 2px 0;
+                padding: 2px 2px;
             }
 
             .hidden{
@@ -173,9 +180,9 @@
             <input type="range" class='slider' id="placesThreshold" oninput="filterPlaces(this.value)" min="0" max="99" value="75">
             <br>
             <button class="layer-button active" id='buildings', onclick="toggleLayerGroup('buildings')"><img src="img/overture.png" class='inline'> Buildings</button>
-                <label id="osm_building" for="osm"><input type="checkbox" checked="checked" name="osm" onclick="toggleLayer('osm_building')" value="osm_building"> OSM</label>
-                <label id="msft_building" for="msft"><input type="checkbox" checked="checked"  name="msft" onclick="toggleLayer('msft_building')" value="msft_building"> MSFT</label>
-                <label id="esri_building" for="esri"><input type="checkbox" checked="checked"  name="esri" onclick="toggleLayer('esri_building')" value="esri_building">Esri</label>
+                <label id="buildings_osm" class='sub-layer active' for="osm"><input type="checkbox" checked="checked" name="osm" onclick="toggleLayerGroup('buildings_osm')"> OSM</label>
+                <label id="buildings_msft" class='sub-layer active' for="msft"><input type="checkbox" checked="checked"  name="msft" onclick="toggleLayerGroup('buildings_msft')"> MSFT</label>
+                <label id="buildings_esri" class='sub-layer active' for="esri"><input type="checkbox" checked="checked"  name="esri" onclick="toggleLayerGroup('buildings_esri')">Esri</label>
 
             <br><hr>
             <button class="layer-button active" id='landcover' onclick="toggleLayerGroup('landcover')"><img src="img/daylight.png" class='inline'> Land</button>
@@ -186,7 +193,7 @@
 
         <div class="action-control">
             <button class="action-button" onclick="pitchAndToggleLayers()">Extruded Buildings View</button>
-            <button class="action-button" onclick="resetMap()">Reset Map View</button>
+            <button class="action-button" onclick="resetMap()">2D View</button>
         </div>
 
         <!-- Buttons container -->
@@ -525,118 +532,97 @@
                     }
                 },
 
+                // Building Offsets by Source
                 {
-                    "id": 'buildingOffset',
+                    "id": 'buildingOffset_osm',
                     "type": "fill",
                     "source": 'buildings',
                     "source-layer": 'bulidings',
-                    "paint": {
-                        "fill-color": ["match",
-                            ["get", "class"],
-                            ["commercial"], "hsl(193,14%,19%)",
-                            "hsl(193,8%,15%)"]
-                    },
-                    "fill-translate": ["interpolate", ["linear"], ["zoom"],
-                        12, ["literal", [0.5, 0.5]],
-                        16, ["literal", [1, 1]],
-                        20, ["literal", [2, 2]]
-                    ]
+                    "paint": buildingOffset.paint,
+                    "fill-translate": buildingOffset["fill-translate"],
+                    "filter": ["in", "OpenStreetMap", ["get","source"]]
+                },
+                {
+                    "id": 'buildingOffset_esri',
+                    "type": "fill",
+                    "source": 'buildings',
+                    "source-layer": 'bulidings',
+                    "paint": buildingOffset.paint,
+                    "fill-translate": buildingOffset["fill-translate"],
+                    "filter": ["in", "Esri", ["get","source"]]
+                },
+                {
+                    "id": 'buildingOffset_msft',
+                    "type": "fill",
+                    "source": 'buildings',
+                    "source-layer": 'bulidings',
+                    "paint": buildingOffset.paint,
+                    "fill-translate": buildingOffset["fill-translate"],
+                    "filter": ["in", "Microsoft", ["get","source"]]
+                },
 
+                // Buildings by source
+                {
+                    "id": 'building_osm',
+                    "type": "fill",
+                    "source": 'buildings',
+                    "source-layer": 'bulidings',
+                    "filter": ["in", "OpenStreetMap", ["get","source"]],
+                    "paint": buildings.paint
                 },
-                // Breaking buildings out by source
-                // {
-                //     "id": 'building',
-                //     "type": "fill",
-                //     "source": 'buildings',
-                //     "source-layer": 'bulidings',
-                //     "paint": {
-                //         "fill-color": ["match",
-                //             ["get", "class"],
-                //             ["commercial"], "hsl(193,14%,24%)",
-                //             "hsl(193,8%,20%)"],
-                //         "fill-outline-color": ["match",
-                //             ["get", "class"],
-                //             ["commercial"], "hsl(193,14%,28%)",
-                //             "hsl(193,8%,25%)"]
-                //     }
-                // },
+                {
+                    "id": 'building_msft',
+                    "type": "fill",
+                    "source": 'buildings',
+                    "source-layer": 'bulidings',
+                    "filter": ["in", "Microsoft", ["get","source"]],
+                    "paint": buildings.paint
+                },
+                {
+                    "id": 'building_esri',
+                    "type": "fill",
+                    "source": 'buildings',
+                    "source-layer": 'bulidings',
+                    "filter": ["in", "Esri", ["get","source"]],
+                    "paint": buildings.paint
+                },
 
+                // Extruded Buildings
                 {
-                    "id": 'osm_building',
-                    "type": "fill",
-                    "source": 'buildings',
-                    "source-layer": 'bulidings',
-                    "filter": ["all",
-                        ["in", "OpenStreetMap", ["get","source"]]
-                    ],
-                    "paint": {
-                        "fill-color": ["match",
-                            ["get", "class"],
-                            ["commercial"], "hsl(193,14%,24%)",
-                            "hsl(193,8%,20%)"],
-                        "fill-outline-color": ["match",
-                            ["get", "class"],
-                            ["commercial"], "hsl(193,14%,28%)",
-                            "hsl(193,8%,25%)"]
-                    }
-                },
-                {
-                    "id": 'msft_building',
-                    "type": "fill",
-                    "source": 'buildings',
-                    "source-layer": 'bulidings',
-                    "filter": ["all",
-                        ["in", "Microsoft", ["get","source"]]
-                    ],
-                    "paint": {
-                        "fill-color": ["match",
-                            ["get", "class"],
-                            ["commercial"], "hsl(193,14%,24%)",
-                            "hsl(193,8%,20%)"],
-                        "fill-outline-color": ["match",
-                            ["get", "class"],
-                            ["commercial"], "hsl(193,14%,28%)",
-                            "hsl(193,8%,25%)"]
-                    }
-                },
-                {
-                    "id": 'esri_building',
-                    "type": "fill",
-                    "source": 'buildings',
-                    "source-layer": 'bulidings',
-                    "filter": ["all",
-                        ["in", "Esri", ["get","source"]]
-                    ],
-                    "paint": {
-                        "fill-color": ["match",
-                            ["get", "class"],
-                            ["commercial"], "hsl(193,14%,24%)",
-                            "hsl(193,8%,20%)"],
-                        "fill-outline-color": ["match",
-                            ["get", "class"],
-                            ["commercial"], "hsl(193,14%,28%)",
-                            "hsl(193,8%,25%)"]
-                    }
-                },
-                {
-                    "id": 'buildingExtruded',
+                    "id": 'buildingExtruded_osm',
                     "type": "fill-extrusion",
                     "source": 'buildings',
                     "source-layer": 'bulidings',
                     "layout": {
                         "visibility": "none"
                     },
-                    "paint": {
-                        "fill-extrusion-color": ["match",
-                            ["get", "class"],
-                            ["commercial"], "hsl(193,14%,24%)",
-                            "hsl(193,8%,20%)"],
-                        "fill-extrusion-base": 0,
-                        "fill-extrusion-height": ["case",
-                            ["has", "height"],
-                            ["to-number", ["get", "height"]], 3.2]
-                    }
+                    "filter": ["in", "OpenStreetMap", ["get","source"]],
+                    "paint": buildingExtruded.paint
                 },
+                {
+                    "id": 'buildingExtruded_esri',
+                    "type": "fill-extrusion",
+                    "source": 'buildings',
+                    "source-layer": 'bulidings',
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "filter": ["in", "Esri", ["get","source"]],
+                    "paint": buildingExtruded.paint
+                },
+                {
+                    "id": 'buildingExtruded_msft',
+                    "type": "fill-extrusion",
+                    "source": 'buildings',
+                    "source-layer": 'bulidings',
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "filter": ["in", "Microsoft", ["get","source"]],
+                    "paint": buildingExtruded.paint
+                },
+
+                // Road Labels
                 {
                     "id": "residentialLabel",
                     "type": "symbol",
@@ -685,27 +671,43 @@
                         "text-halo-width": 1
                     }
                 },
+
+                // Building Labels by Source
                 {
-                    "id": "buildingLabel",
+                    "id": "buildingLabel_osm",
                     "type": "symbol",
                     "source": "buildings", "source-layer": "bulidings",
-                    "filter": ["has", "name"],
+                    "filter": ["all",
+                        ["has", "name"],
+                        ["in", "OpenStreetMap", ["get","source"]]
+                    ],
                     "minzoom": 15,
-                    "layout": {
-                        "text-field": ["get", "name"],
-                        "text-font": ["Noto Sans Regular"],
-                        "text-max-width": 5, "text-size": 9.3,
-                        "text-line-height": 1,
-                        "icon-image": "building",
-                        "text-justify": "auto",
-                        "text-variable-anchor": ["literal", ["right", "left"]],
-                        "text-radial-offset": 0.5
-                    },
-                    "paint": {
-                        "text-color": "hsl(193, 8%, 63%)",
-                        "text-halo-color": "hsl(193,8%,13%)",
-                        "text-halo-width": 1
-                    }
+                    "layout": buildingLabel.layout,
+                    "paint": buildingLabel.paint
+                },
+                {
+                    "id": "buildingLabel_esri",
+                    "type": "symbol",
+                    "source": "buildings", "source-layer": "bulidings",
+                    "filter": ["all",
+                        ["has", "name"],
+                        ["in", "Esri", ["get","source"]]
+                    ],
+                    "minzoom": 15,
+                    "layout": buildingLabel.layout,
+                    "paint": buildingLabel.paint
+                },
+                {
+                    "id": "buildingLabel_msft",
+                    "type": "symbol",
+                    "source": "buildings", "source-layer": "bulidings",
+                    "filter": ["all",
+                        ["has", "name"],
+                        ["in", "Microsoft", ["get","source"]]
+                    ],
+                    "minzoom": 15,
+                    "layout": buildingLabel.layout,
+                    "paint": buildingLabel.paint
                 },
                 {
                     "id": "placesLabel",
@@ -940,7 +942,7 @@
         //Inspector:
         [
             'residential','footway','primary','motorway','secondaryTertiary','parkingAisleUnknown',
-            'osm_building','esri_building','msft_building'
+            'building_osm','building_esri','building_msft'
         ].forEach(function(layer){
             map.on('mouseenter', layer, (e) => {
                 map.getCanvas().style.cursor = 'pointer';
@@ -978,10 +980,6 @@
     }
 
 
-
-
-
-
     function filterPlaces(val){
         map.setFilter('placesLabel',["all",
             ["has", "name"],
@@ -1006,7 +1004,10 @@
     // Function to toggle an entire layer group on/off based on checkbox status
     function toggleLayerGroup(layerGroup) {
         const layers = {
-            buildings: ['buildingLabel', 'buildingOffset', 'building','esri_building','osm_building','msft_building'],
+            buildings: ALL_BUILDING_LAYERS,
+            buildings_osm: OSM_BUILDING_LAYERS,
+            buildings_esri: ESRI_BUILDING_LAYERS,
+            buildings_msft: MSFT_BUILDING_LAYERS,
             places: ['placesLabel'],
             roads: ['highwayLabel', 'residentialLabel', 'motorway', 'motorwayCasing', 'primary', 'secondaryTertiary', 'residential', 'parkingAisleUnknown', 'footway', 'primaryCasing', 'secondaryTertiaryCasing', 'residentialCasing', 'parkingAisleUnknownCasing', 'footwayCasing'],
             landcover: ['land','sand', 'wetland', 'forest'],
@@ -1016,48 +1017,67 @@
 
         var visibility;
         layers[layerGroup].forEach(layer => {
-            visibility = toggleLayer(layer); // Call the existing toggleLayer function to toggle individual layers
+            if (!extruded_view){
+                visibility = toggleLayer(layer); // Call the existing toggleLayer function to toggle individual layers
+            }else{
+                if(layerGroup=='buildings_osm'){
+                    visibility = toggleLayer('buildingExtruded_osm')
+                }
+                if(layerGroup=='buildings_esri'){
+                    visibility = toggleLayer('buildingExtruded_esri')
+                }
+                if(layerGroup=='buildings_msft'){
+                    visibility = toggleLayer('buildingExtruded_msft')
+                }
+            }
         });
 
+        // Set active / visible
         if (visibility == 'visible'){
-            document.getElementById(layerGroup).className += ' active'
+            document.getElementById(layerGroup).classList.add("active")
             if (layerGroup == 'places'){
-               document.getElementById('placesThreshold').className = 'slider'
+               document.getElementById('placesThreshold').classList.remove("hidden")
+            }else if(layerGroup == 'buildings'){
+                document.getElementById('buildings_osm').classList.remove('hidden')
+                document.getElementById('buildings_msft').classList.remove('hidden')
+                document.getElementById('buildings_esri').classList.remove('hidden')
             }
-            else if
-                (layerGroup == 'buildings'){
-                    document.getElementById('osm_building').className = ''
-                    document.getElementById('msft_building').className = ''
-                    document.getElementById('esri_building').className = ''
-                }
 
         }else{
-            document.getElementById(layerGroup).className = 'layer-button'
+            document.getElementById(layerGroup).classList.remove("active")
             if (layerGroup == 'places'){
-               document.getElementById('placesThreshold').className += ' hidden'
-            }else if
-                (layerGroup == 'buildings'){
-                    document.getElementById('osm_building').className += ' hidden'
-                    document.getElementById('msft_building').className += ' hidden'
-                    document.getElementById('esri_building').className += ' hidden'
-                }
+               document.getElementById('placesThreshold').classList.add("hidden")
+            }else if(layerGroup == 'buildings'){
+                document.getElementById('buildings_osm').classList.add('hidden')
+                document.getElementById('buildings_msft').classList.add('hidden')
+                document.getElementById('buildings_esri').classList.add('hidden')
+            }
         }
     }
 
     function pitchAndToggleLayers() {
+        extruded_view = true;
+
         // Pitch the map 50 degrees
         map.setPitch(50);
 
         // Turn on the "buildingExtruded" layer
-        map.setLayoutProperty("buildingExtruded", 'visibility', 'visible');
+        map.setLayoutProperty("buildingExtruded_osm", 'visibility', 'visible');
+        map.setLayoutProperty("buildingExtruded_esri", 'visibility', 'visible');
+        map.setLayoutProperty("buildingExtruded_msft", 'visibility', 'visible');
 
         // Turn off the layers "buildingLabel", "placesLabel", "buildingOffset"
-        map.setLayoutProperty("buildingLabel", 'visibility', 'none');
-        map.setLayoutProperty("esri_building", 'visibility', 'none');
-        map.setLayoutProperty("msft_building", 'visibility', 'none');
-        map.setLayoutProperty("osm_building", 'visibility', 'none');
+        map.setLayoutProperty("buildingLabel_esri", 'visibility', 'none');
+        map.setLayoutProperty("buildingLabel_msft", 'visibility', 'none');
+        map.setLayoutProperty("buildingLabel_osm", 'visibility', 'none');
+        map.setLayoutProperty("building_osm", 'visibility', 'none');
+        map.setLayoutProperty("building_msft", 'visibility', 'none');
+        map.setLayoutProperty("building_esri", 'visibility', 'none');
         map.setLayoutProperty("placesLabel", 'visibility', 'none');
-        map.setLayoutProperty("buildingOffset", 'visibility', 'none');
+        map.setLayoutProperty("buildingOffset_osm", 'visibility', 'none');
+        map.setLayoutProperty("buildingOffset_esri", 'visibility', 'none');
+        map.setLayoutProperty("buildingOffset_msft", 'visibility', 'none');
+
     }
 
 
@@ -1066,22 +1086,25 @@
         // Reset pitch to 0 degrees
         map.setPitch(0);
 
+        extruded_view = false;
+
         // Turn off the "buildingExtruded" layer
-        map.setLayoutProperty("buildingExtruded", 'visibility', 'none');
+        map.setLayoutProperty("buildingExtruded_osm", 'visibility', 'none');
+        map.setLayoutProperty("buildingExtruded_esri", 'visibility', 'none');
+        map.setLayoutProperty("buildingExtruded_msft", 'visibility', 'none');
 
         // Turn on the layers "buildingLabel", "placesLabel", "buildingOffset"
-        map.setLayoutProperty("buildingLabel", 'visibility', 'visible');
+        // Turn on all of the building layers:
+        ALL_BUILDING_LAYERS.forEach(function(layer){
+            map.setLayoutProperty(layer, 'visibility', 'visible');
+        })
         map.setLayoutProperty("placesLabel", 'visibility', 'visible');
-        map.setLayoutProperty("esri_building", 'visibility', 'visible');
-        map.setLayoutProperty("msft_building", 'visibility', 'visible');
-        map.setLayoutProperty("osm_building", 'visibility', 'visible');
-        map.setLayoutProperty("buildingOffset", 'visibility', 'visible');
 
         // Reset the map center and zoom to the initial values
-        map.jumpTo({
-            center: [-122.332027, 47.603323],
-            zoom: 14
-        });
+        // map.jumpTo({
+        //     center: [-122.332027, 47.603323],
+        //     zoom: 14
+        // });
     }
 
 
