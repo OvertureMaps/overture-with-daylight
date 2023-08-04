@@ -1,11 +1,11 @@
-Building a basemap by complementing Overture Data with Daylight OSM
+Building a basemap by complementing Overture data with OpenStreetMap features from the Daylight.
 ===
 
 ![Screenshot of Map of Seattle](screenshot.png)
 
-The currently available Overture themes are `transportation`, `buildings`, `places`, and `admins`. A complete basemap, however, needs some additional context layers, such as land and water, to start.
+Overture data themes include `transportation`, `buildings`, `places`, and `admins`. A complete basemap, however, will need additional context layers, such as land and water.
 
-For this, we look to the [Daylight Earth Table](https://daylightmap.org/earth/). This dataset is published alongside the Daylight Map Distribution, and is created by extracting relevant features from Daylight and organizing them into `theme`, `class`, and `subclass`. If, for example, you are looking for all of the water in the world, you can query the `water` theme. If you only want oceans, there is an `ocean` class. Similarly, there is a `land` theme that includes natural landcover and a `landuse` theme with features relating to land deveoped by humans.
+For these _context layers_, we can look to the [Daylight Earth Table](https://daylightmap.org/earth/). This dataset is published alongside the [Daylight Map Distribution](https://daylightmap.org), and is created by extracting relevant features from Daylight and organizing them into `theme`, `class`, and `subclass`. If, for example, you are looking for all of the water in the world, you can query the `water` theme. If you only want oceans, there is an `ocean` class. Similarly, there is a `land` theme that includes natural landcover and a `landuse` theme with features relating to land developed by humans.
 
 
 [Watch our Daylight Earth Table presentation at NACIS 2022](https://www.youtube.com/watch?v=7ea3KZni0AQ).

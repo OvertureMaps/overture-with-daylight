@@ -1,18 +1,3 @@
-var extruded_view = false;
-
-const OSM_BUILDING_LAYERS = [
-    'buildingLabel_osm', 'buildingOffset_osm', 'building_osm'
-]
-const ESRI_BUILDING_LAYERS = [
-    'buildingLabel_esri', 'buildingOffset_esri', 'building_esri'
-]
-
-const MSFT_BUILDING_LAYERS = [
-    'buildingLabel_msft', 'buildingOffset_msft','building_msft'
-]
-
-var ALL_BUILDING_LAYERS = OSM_BUILDING_LAYERS.concat(ESRI_BUILDING_LAYERS).concat(MSFT_BUILDING_LAYERS)
-
 const buildingOffset = {
     "paint": {
         "fill-color": ["match",
@@ -27,39 +12,7 @@ const buildingOffset = {
     ]
 }
 
-const buildings = {
-    "paint": {
-        "fill-color": ["match",
-            ["get", "class"],
-            ["commercial"], "hsl(193,14%,24%)",
-            "hsl(193,8%,20%)"],
-        "fill-outline-color": ["match",
-            ["get", "class"],
-            ["commercial"], "hsl(193,14%,28%)",
-            "hsl(193,8%,25%)"]
-    }
-}
-
-const buildingExtruded = {
-    "paint":{
-        "fill-extrusion-color": ["match",
-            ["get", "class"],
-            ["commercial"], "hsl(193,14%,24%)",
-            "hsl(193,8%,20%)"
-        ],
-        "fill-extrusion-base": 0,
-        "fill-extrusion-height": ["case",
-            ["has", "height"],
-            ["to-number", ["get", "height"]], 3.2
-        ]
-    }
-
-}
-
 const buildingLabel = {
-    "source": "buildings", "source-layer": "bulidings",
-    "filter": ["has", "name"],
-    "minzoom": 15,
     "layout": {
         "text-field": ["get", "name"],
         "text-font": ["Noto Sans Regular"],
@@ -74,5 +27,191 @@ const buildingLabel = {
         "text-color": "hsl(193, 8%, 63%)",
         "text-halo-color": "hsl(193,8%,13%)",
         "text-halo-width": 1
+    }
+}
+
+var BUILDINGS_2D = {
+    "buildingOffset_osm" : {
+        "id": 'buildingOffset_osm',
+        "type": "fill",
+        "source": 'buildings',
+        "source-layer": 'bulidings',
+        "paint": buildingOffset.paint,
+        "fill-translate": buildingOffset["fill-translate"],
+        "filter": ["in", "OpenStreetMap", ["get","source"]]
+    },
+    "buildingOffset_esri" : {
+        "id": 'buildingOffset_esri',
+        "type": "fill",
+        "source": 'buildings',
+        "source-layer": 'bulidings',
+        "paint": buildingOffset.paint,
+        "fill-translate": buildingOffset["fill-translate"],
+        "filter": ["in", "Esri", ["get","source"]]
+    },
+    "buildingOffset_msft" : {
+        "id": 'buildingOffset_msft',
+        "type": "fill",
+        "source": 'buildings',
+        "source-layer": 'bulidings',
+        "paint": buildingOffset.paint,
+        "fill-translate": buildingOffset["fill-translate"],
+        "filter": ["in", "Microsoft", ["get","source"]]
+    },
+    "building_osm" : {
+        "id": 'building_osm',
+        "type": "fill",
+        "source": 'buildings',
+        "source-layer": 'bulidings',
+        "filter": ["in", "OpenStreetMap", ["get","source"]],
+        "paint": {
+            "fill-color": ["match",
+                ["get", "class"],
+                ["commercial"], "hsl(193,14%,24%)",
+                "hsl(193,8%,20%)"],
+            "fill-outline-color": ["match",
+                ["get", "class"],
+                ["commercial"], "hsl(193,14%,28%)",
+                "hsl(193,8%,25%)"]
+        }
+    },
+    "building_msft" : {
+        "id": 'building_msft',
+        "type": "fill",
+        "source": 'buildings',
+        "source-layer": 'bulidings',
+        "filter": ["in", "Microsoft", ["get","source"]],
+        "paint": {
+            "fill-color": ["match",
+                ["get", "class"],
+                ["commercial"], "hsl(193,14%,24%)",
+                "hsl(193,8%,20%)"],
+            "fill-outline-color": ["match",
+                ["get", "class"],
+                ["commercial"], "hsl(193,14%,28%)",
+                "hsl(193,8%,25%)"]
+        }
+    },
+    "building_esri" : {
+        "id": 'building_esri',
+        "type": "fill",
+        "source": 'buildings',
+        "source-layer": 'bulidings',
+        "filter": ["in", "Esri", ["get","source"]],
+        "paint": {
+            "fill-color": ["match",
+                ["get", "class"],
+                ["commercial"], "hsl(193,14%,24%)",
+                "hsl(193,8%,20%)"],
+            "fill-outline-color": ["match",
+                ["get", "class"],
+                ["commercial"], "hsl(193,14%,28%)",
+                "hsl(193,8%,25%)"]
+        }
+    },
+    "buildingLabel_osm" : {
+        "id": "buildingLabel_osm",
+        "type": "symbol",
+        "source": "buildings", "source-layer": "bulidings",
+        "filter": ["all",
+            ["has", "name"],
+            ["in", "OpenStreetMap", ["get","source"]]
+        ],
+        "minzoom": 15,
+        "layout": buildingLabel.layout,
+        "paint": buildingLabel.paint
+    },
+    "buildingLabel_esri": {
+        "id": "buildingLabel_esri",
+        "type": "symbol",
+        "source": "buildings", "source-layer": "bulidings",
+        "filter": ["all",
+            ["has", "name"],
+            ["in", "Esri", ["get","source"]]
+        ],
+        "minzoom": 15,
+        "layout": buildingLabel.layout,
+        "paint": buildingLabel.paint
+    },
+    "buildingLabel_msft":{
+        "id": "buildingLabel_msft",
+        "type": "symbol",
+        "source": "buildings", "source-layer": "bulidings",
+        "filter": ["all",
+            ["has", "name"],
+            ["in", "Microsoft", ["get","source"]]
+        ],
+        "minzoom": 15,
+        "layout": buildingLabel.layout,
+        "paint": buildingLabel.paint
+    },
+}
+
+var BUILDINGS_3D = {
+    "buildingExtruded_osm" : {
+        "id": 'buildingExtruded_osm',
+        "type": "fill-extrusion",
+        "source": 'buildings',
+        "source-layer": 'bulidings',
+        "layout": {
+            "visibility": "none"
+        },
+        "filter": ["in", "OpenStreetMap", ["get","source"]],
+        "paint":{
+            "fill-extrusion-color": ["match",
+                ["get", "class"],
+                ["commercial"], "hsl(193,14%,24%)",
+                "hsl(193,8%,20%)"
+            ],
+            "fill-extrusion-base": 0,
+            "fill-extrusion-height": ["case",
+                ["has", "height"],
+                ["to-number", ["get", "height"]], 3.2
+            ]
+        }
+    },
+    "buildingExtruded_esri": {
+        "id": 'buildingExtruded_esri',
+        "type": "fill-extrusion",
+        "source": 'buildings',
+        "source-layer": 'bulidings',
+        "layout": {
+            "visibility": "none"
+        },
+        "filter": ["in", "Esri", ["get","source"]],
+        "paint":{
+            "fill-extrusion-color": ["match",
+                ["get", "class"],
+                ["commercial"], "hsl(193,14%,24%)",
+                "hsl(193,8%,20%)"
+            ],
+            "fill-extrusion-base": 0,
+            "fill-extrusion-height": ["case",
+                ["has", "height"],
+                ["to-number", ["get", "height"]], 3.2
+            ]
+        }
+    },
+    "buildingExtruded_msft": {
+        "id": 'buildingExtruded_msft',
+        "type": "fill-extrusion",
+        "source": 'buildings',
+        "source-layer": 'bulidings',
+        "layout": {
+            "visibility": "none"
+        },
+        "filter": ["in", "Microsoft", ["get","source"]],
+        "paint":{
+            "fill-extrusion-color": ["match",
+                ["get", "class"],
+                ["commercial"], "hsl(193,14%,24%)",
+                "hsl(193,8%,20%)"
+            ],
+            "fill-extrusion-base": 0,
+            "fill-extrusion-height": ["case",
+                ["has", "height"],
+                ["to-number", ["get", "height"]], 3.2
+            ]
+        }
     }
 }

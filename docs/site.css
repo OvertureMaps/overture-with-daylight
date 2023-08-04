@@ -1,0 +1,145 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body,
+#map {
+    height: 100%
+}
+
+/* Modified styles for the header */
+header {
+    text-align: left;
+    padding: 10px 25px;
+    background-color: #272b30;
+    position: absolute;
+    top:0px;
+    z-index: 100;
+    /* Set the height to half the original size */
+}
+
+/* Styles for the title */
+h1 {
+    color: aliceblue;
+    margin: 0;
+    font-family: 'Londrina Solid', cursive;
+    font-size: xx-large
+        /* Remove margin to avoid extra spacing */
+}
+
+
+
+
+/* Styles for the buttons container */
+.buttons-container {
+    position: absolute;
+    left: 10px;
+    bottom: 60px;
+}
+
+/* Styles for the buttons container */
+.action-control {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+}
+
+/* Styles for the buttons container */
+.layer-control {
+    position: absolute;
+    left: 10px;
+    bottom: 110px;
+}
+
+/* Styles for each button */
+.layer-button {
+    margin: 5px 0;
+    padding: 8px 12px;
+    background-color: #272b30;
+    color: rgb(113, 113, 113);
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Londrina Solid', cursive;
+    font-size: larger;
+}
+
+.layer-button.active {
+    background-color: #272b30;
+    color: aliceblue;
+}
+
+.sub-layer{
+    margin: 2px 0;
+    padding: 2px 2px;
+}
+
+.hidden{
+    display:none;
+}
+
+/* Styles for each button */
+.action-button {
+    margin: 5px 0;
+    padding: 8px 12px;
+    background-color: #272b30;
+    color: aliceblue;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Londrina Solid', cursive;
+    font-size: larger;
+}
+
+/* Styles for each button */
+.zoom-button {
+    margin: 5px 0;
+    padding: 8px 12px;
+    background-color: #272b30;
+    color: aliceblue;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Londrina Solid', cursive;
+    font-size: larger;
+}
+
+/* Styles for the buttons container */
+.buttons-container {
+    position: absolute;
+    left: 10px;
+    bottom: 60px;
+}
+
+/* Styles for each button */
+.box {
+    margin: 5px;
+    background-color: #272b30;
+    color: aliceblue;
+    border-radius: 4px;
+}
+
+img.inline{
+    margin-bottom: -5px;
+    margin-right: 3px;
+    padding: 0;
+    height: 1.2em;
+    border-radius: 4px;
+}
+label{
+    margin: 5px 0;
+    padding: 1px 2px;
+    background-color: #272b30;
+    color: aliceblue;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Londrina Solid', cursive;
+    font-size: larger;
+}
+
+.slider{
+    cursor: pointer;
+    max-width:70px;
+}
