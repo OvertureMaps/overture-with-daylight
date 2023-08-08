@@ -50,6 +50,8 @@ COPY (
 WITH (FORMAT GDAL, DRIVER 'GeoJSONSeq');
 ```
 
+All of the DuckDB queries used in this example are recorded in `conversion.sql`.
+
 ### 3. Create a tileset
 Use [Tippecanoe](https://github.com/felt/tippecanoe) to turn the geojson features into a `pmtiles` archive:
 
