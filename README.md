@@ -96,3 +96,7 @@ This demo uses `[pmtiles](https://github.com/protomaps/PMTiles)`, so you will ne
 
 On a mac, you can run `http-server --cors .` from the `docs` directory after installing http-server:
 `brew install http-server`). Then open http://127.0.0.1
+
+### Licensing
+This example is licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
+
