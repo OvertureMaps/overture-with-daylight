@@ -38,19 +38,19 @@ const PLACENAMES = {
                 ["linear"],
                 ["zoom"],
                 9,
-                "hsl(0, 0%, 70%)",
+                "hsl(214, 8%, 30%)",
                 10,
-                ["match", ["get", "subclass"], ["borough"], "hsl(0, 0%, 70%)", ["suburb"], "hsl(0, 0%, 70%)", "hsl(0, 0%, 70%)"],
+                ["match", ["get", "subclass"], ["borough"], "hsl(214, 8%, 30%)", ["suburb"], "hsl(214, 8%, 30%)", "hsl(214, 8%, 30%)"],
                 11,
-                ["match", ["get", "subclass"], ["borough"], "hsl(0, 0%, 70%)", ["suburb", "neighborhood"], "hsl(0, 0%, 70%)", "hsl(0, 0%, 70%)"],
+                ["match", ["get", "subclass"], ["borough"], "hsl(214, 8%, 30%)", ["suburb", "neighborhood"], "hsl(214, 8%, 30%)", "hsl(214, 8%, 30%)"],
                 12,
-                "hsl(0, 0%, 70%)",
+                "hsl(214, 8%, 30%)",
                 14,
-                ["match", ["get", "subclass"], ["borough", "suburb"], "hsl(0, 0%, 70%)", ["neighborhood"], "hsl(0, 0%, 80%)", "hsl(0, 0%, 70%)"],
+                ["match", ["get", "subclass"], ["borough", "suburb"], "hsl(214, 8%, 30%)", ["neighborhood"], "hsl(215, 8%, 20%)", "hsl(214, 8%, 30%)"],
                 16,
-                ["match", ["get", "subclass"], ["borough", "block"], "hsl(0, 0%, 70%)", ["suburb", "neighborhood"], "hsl(0, 0%, 70%)", "hsl(0, 0%, 70%)"]
+                ["match", ["get", "subclass"], ["borough", "block"], "hsl(214, 8%, 30%)", ["suburb", "neighborhood"], "hsl(214, 8%, 30%)", "hsl(214, 8%, 30%)"]
             ],
-            "text-halo-color": "hsl(210,10%,12%)",
+            "text-halo-color": "hsl(0, 0%, 100%)",
             "text-halo-width": ["match", ["get", "subclass"], ["megacity", "metropolis"], 1, ["city", "municipality"], 1, 1]
         }
     },
@@ -123,51 +123,51 @@ const PLACENAMES = {
                 ["linear"],
                 ["zoom"],
                 8,
-                ["match", ["get", "subclass"], ["town"], "hsl(0, 0%, 70%)", "hsl(0, 0%, 70%)"],
+                ["match", ["get", "subclass"], ["town"], "hsl(214, 8%, 30%)", "hsl(214, 8%, 30%)"],
                 9,
                 [
                     "match",
                     ["get", "subclass"],
                     ["megacity", "metropolis", "city"],
-                    "hsl(0, 0%, 80%)",
+                    "hsl(215, 8%, 20%)",
                     ["town", "municipality"],
-                    "hsl(0, 0%, 70%)",
-                    "hsl(0, 0%, 70%)"
+                    "hsl(214, 8%, 30%)",
+                    "hsl(214, 8%, 30%)"
                 ],
                 10,
                 [
                     "match",
                     ["get", "subclass"],
                     ["megacity", "metropolis"],
-                    "hsl(0, 0%, 80%)",
+                    "hsl(215, 8%, 20%)",
                     ["town", "city", "municipality"],
-                    "hsl(0, 0%, 70%)",
-                    "hsl(0, 0%, 70%)"
+                    "hsl(214, 8%, 30%)",
+                    "hsl(214, 8%, 30%)"
                 ],
                 11,
                 [
                     "match",
                     ["get", "subclass"],
                     ["megacity", "metropolis"],
-                    "hsl(0, 0%, 80%)",
+                    "hsl(215, 8%, 20%)",
                     ["town", "village", "city", "municipality"],
-                    "hsl(0, 0%, 70%)",
-                    "hsl(0, 0%, 70%)"
+                    "hsl(214, 8%, 30%)",
+                    "hsl(214, 8%, 30%)"
                 ],
                 12,
                 [
                     "match",
                     ["get", "subclass"],
                     ["megacity", "metropolis"],
-                    "hsl(0, 0%, 80%)",
+                    "hsl(215, 8%, 20%)",
                     ["town", "village", "city", "municipality"],
-                    "hsl(0, 0%, 70%)",
-                    "hsl(0, 0%, 70%)"
+                    "hsl(214, 8%, 30%)",
+                    "hsl(214, 8%, 30%)"
                 ],
                 14,
-                "hsl(0, 0%, 70%)"
+                "hsl(214, 8%, 30%)"
             ],
-            "text-halo-color": "hsl(210,10%,12%)",
+            "text-halo-color": "hsl(0, 0%, 100%)",
             "text-halo-width": ["match", ["get", "subclass"], ["megacity", "metropolis"], 1, ["city", "municipality"], 1, 1]
         }
     }

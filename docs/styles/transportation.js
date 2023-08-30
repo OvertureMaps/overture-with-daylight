@@ -11,7 +11,7 @@ const TRANSPORTATION = {
         "paint": {
             "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 0.25, 20, 1.3],
             "line-gap-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 0.5, 16, 3, 22, 25],
-            "line-color": "hsl(219,12%,15%)"
+            "line-color": "hsl(214, 26%, 85%)"
         }
     },
     "footway": {
@@ -26,7 +26,7 @@ const TRANSPORTATION = {
         "layout": { "line-cap": "round", "line-join": "round" },
         "paint": {
             "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 0.5, 16, 3, 22, 25],
-            "line-color": ["step", ["zoom"], "hsl(219,8%,27%)", 17, "hsl(219,8%,23%)"]
+            "line-color": "hsl(214, 36%, 97%)"
         }
     },
     "parkingAisleUnknownCasing": {
@@ -36,16 +36,28 @@ const TRANSPORTATION = {
         "minzoom": 14, "maxzoom": 24,
         "filter": ["match", ["get", "class"], ["parkingAisle", "unknown"], true, false],
         "layout": { "line-cap": "round", "line-join": "round" },
-        "paint": { "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 0.25, 20, 1.3], "line-gap-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 0.5, 16, 3.5, 22, 75], "line-color": ["step", ["zoom"], "hsl(219,8%,15%)", 10, "hsl(219,10%,15%)", 11, "hsl(219,12%,15%)", 12, "hsl(219,12%,20%)", 16, "hsl(219,12%,20%)"] }
+        "paint": {
+            "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 0.25, 20, 1.3], "line-gap-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 0.5, 16, 3.5, 22, 75],
+            "line-color": ["step", ["zoom"],
+                "hsl(216,26%,89%)",
+                16, "hsl(214, 26%, 80%)"
+            ]
+        }
     },
-    "residentialCasing" : {
+    "residentialCasing": {
         "id": "residentialCasing",
         "type": "line",
         "source": "roads", "source-layer": "roads",
         "minzoom": 12, "maxzoom": 24,
         "filter": ["match", ["get", "class"], ["residential"], true, false],
         "layout": { "line-cap": "round", "line-join": "round" },
-        "paint": { "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 0.75, 20, 1.3], "line-gap-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 1, 16, 6, 22, 125], "line-color": ["step", ["zoom"], "hsl(219,8%,15%)", 10, "hsl(219,10%,15%)", 11, "hsl(219,12%,15%)", 12, "hsl(219,12%,20%)", 16, "hsl(219,12%,20%)"] }
+        "paint": {
+            "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 0.75, 20, 1.3], "line-gap-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 1, 16, 6, 22, 125],
+            "line-color": ["step", ["zoom"],
+                "hsl(216,26%,89%)",
+                16, "hsl(214, 26%, 80%)"
+            ]
+        }
     },
     "secondaryTertiaryCasing": {
         "id": "secondaryTertiaryCasing",
@@ -53,7 +65,14 @@ const TRANSPORTATION = {
         "source": "roads", "source-layer": "roads",
         "minzoom": 11, "maxzoom": 24,
         "filter": ["match", ["get", "class"], ["secondary", "tertiary"], true, false],
-        "paint": { "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 1, 20, 1.3], "line-gap-width": ["interpolate", ["exponential", 1.5], ["zoom"], 10, 0.5, 12, 2.2, 16, 6.6, 22, 160], "line-color": ["step", ["zoom"], "hsl(219,10%,15%)", 11, "hsl(219,12%,15%)", 12, "hsl(219,12%,15%)", 13, "hsl(219,12%,15%)"] }
+        "paint": {
+            "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 1, 20, 1.3], "line-gap-width": ["interpolate", ["exponential", 1.5], ["zoom"], 10, 0.5, 12, 2.2, 16, 6.6, 22, 160],
+            "line-color": ["step",["zoom"],
+            "hsl(0, 0%, 100%)",
+            12,"hsl(216,26%,89%)",
+            16,"hsl(214, 26%, 80%)"
+        ]
+        }
     },
     "primaryCasing": {
         "id": "primaryCasing",
@@ -62,7 +81,16 @@ const TRANSPORTATION = {
         "minzoom": 8, "maxzoom": 24,
         "filter": ["match", ["get", "class"], ["primary"], true, false],
         "layout": { "line-cap": ["step", ["zoom"], "butt", 16, "round"], "line-join": ["step", ["zoom"], "miter", 16, "round"] },
-        "paint": { "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 1, 20, 1.4], "line-gap-width": ["interpolate", ["exponential", 1.5], ["zoom"], 8, 0.5, 12, 3.1, 16, 9.3, 22, 175], "line-color": ["step", ["zoom"], "hsl(219,10%,15%)", 10, "hsl(219,10%,15%)", 11, "hsl(219,12%,15%)", 12, "hsl(219,8%,15%)", 16, "hsl(219,12%,15%)"] }
+        "paint": {
+            "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 1, 20, 1.4], "line-gap-width": ["interpolate", ["exponential", 1.5], ["zoom"], 8, 0.5, 12, 3.1, 16, 9.3, 22, 175],
+            "line-color": ["step",["zoom"],
+            "hsl(0, 0%, 100%)",
+            10,"hsl(0, 0%, 100%)",
+            11,"hsl(0, 0%, 100%)",
+            12,"hsl(216,26%,89%)",
+            16,"hsl(214, 26%, 80%)"
+        ]
+        }
     },
     "parkingAisleUnknown": {
         "id": "parkingAisleUnknown",
@@ -93,21 +121,7 @@ const TRANSPORTATION = {
                 22,
                 75
             ],
-            "line-color": [
-                "step",
-                [
-                    "zoom"
-                ],
-                "hsl(219,10%,35%)",
-                10,
-                "hsl(219,10%,30%)",
-                11,
-                "hsl(219,11%,25%)",
-                12,
-                "hsl(219,11%,30%)",
-                16,
-                "hsl(219,12%,30%)"
-            ]
+            "line-color": "hsl(0, 0%, 100%)"
         }
     },
     "residential": {
@@ -121,7 +135,7 @@ const TRANSPORTATION = {
         "layout": { "line-cap": ["step", ["zoom"], "butt", 13, "round"], "line-join": ["step", ["zoom"], "miter", 13, "round"] },
         "paint": {
             "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 1, 16, 6, 22, 125],
-            "line-color": ["step", ["zoom"], "hsl(219,10%,35%)", 10, "hsl(219,10%,30%)", 11, "hsl(219,11%,25%)", 12, "hsl(219,11%,30%)", 16, "hsl(219,12%,30%)"]
+            "line-color": "hsl(0, 0%, 100%)"
         }
     },
     "secondaryTertiary": {
@@ -135,7 +149,13 @@ const TRANSPORTATION = {
         "layout": { "line-cap": ["step", ["zoom"], "butt", 13, "round"], "line-join": ["step", ["zoom"], "miter", 13, "round"] },
         "paint": {
             "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 10, 0.5, 12, 2.2, 16, 6.6, 22, 160],
-            "line-color": ["step", ["zoom"], "hsl(219,10%,30%)", 11, "hsl(219,11%,25%)", 12, "hsl(219,11%,25%)", 16, "hsl(219,12%,30%)"]
+            "line-color": ["step", ["zoom"], "hsl(214, 26%, 80%)",
+                11,
+                "hsl(214, 26%, 85%)",
+                12,
+                "hsl(0, 0%, 100%)",
+                16,
+                "hsl(0, 0%, 100%)"]
         }
     },
     "primary": {
@@ -153,7 +173,16 @@ const TRANSPORTATION = {
         },
         "paint": {
             "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 8, 0.5, 12, 3.1, 16, 9.3, 22, 175],
-            "line-color": ["step", ["zoom"], "hsl(219,10%,45%)", 10, "hsl(219,10%,40%)", 11, "hsl(219,11%,35%)", 12, "hsl(219,11%,35%)", 16, "hsl(219,12%,30%)"]
+            "line-color": ["step", ["zoom"],
+                "hsl(214, 26%, 69%)",
+                10,
+                "hsl(214, 26%, 79%)",
+                11,
+                "hsl(214, 26%, 85%)",
+                12,
+                "hsl(0, 0%, 100%)",
+                16,
+                "hsl(0, 0%, 100%)"]
         }
     },
     "motorwayCasing": {
@@ -171,7 +200,23 @@ const TRANSPORTATION = {
         "paint": {
             "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 12, 1, 20, 1.4],
             "line-gap-width": ["interpolate", ["exponential", 1.5], ["zoom"], 6, 0.5, 12, 3.3, 16, 9.9, 22, 175],
-            "line-color": "hsl(219,8%,15%)"
+            "line-color": [
+                "step",
+                [
+                    "zoom"
+                ],
+                "hsl(0, 0%, 100%)",
+                8,
+                "hsl(0, 0%, 100%)",
+                10,
+                "hsl(0, 0%, 100%)",
+                11,
+                "hsl(0, 0%, 100%)",
+                12,
+                "hsl(214, 26%, 77%)",
+                16,
+                "hsl(214, 26%, 70%)"
+            ]
         }
     },
     "motorway": {
@@ -188,7 +233,18 @@ const TRANSPORTATION = {
         },
         "paint": {
             "line-width": ["interpolate", ["exponential", 1.5], ["zoom"], 6, 0.5, 12, 3.3, 16, 9.9, 22, 175],
-            "line-color": ["step", ["zoom"], "hsl(219,12%,50%)", 8, "hsl(219,12%,50%)", 10, "hsl(219,10%,45%)", 11, "hsl(219,10%,45%)", 12, "hsl(219,10%,45%)", 16, "hsl(219,8%,38%)"]
+            "line-color": ["step", ["zoom"],
+                "hsl(214, 26%, 67%)",
+                8,
+                "hsl(214, 26%, 70%)",
+                10,
+                "hsl(214, 26%, 75%)",
+                11,
+                "hsl(214, 26%, 77%)",
+                12,
+                "hsl(214, 26%, 87%)",
+                16,
+                "hsl(214, 21%, 85%)"]
         }
     },
 
@@ -212,8 +268,8 @@ const TRANSPORTATION = {
             "symbol-placement": "line", "text-padding": 5
         },
         "paint": {
-            "text-color": "hsl(0, 0%, 70%)",
-            "text-halo-color": "hsl(210,10%,12%)",
+            "text-color": "hsl(214, 16%, 55%)",
+            "text-halo-color": "hsl(0,0%,100%)",
             "text-halo-width": 1
         }
     },
@@ -236,8 +292,8 @@ const TRANSPORTATION = {
             "symbol-placement": "line", "text-padding": 5
         },
         "paint": {
-            "text-color": "hsl(0, 0%, 80%)",
-            "text-halo-color": "hsl(210,10%,12%)",
+            "text-color": "hsl(214, 16%, 45%)",
+            "text-halo-color": "hsl(0,0%,100%)",
             "text-halo-width": 1
         }
     }

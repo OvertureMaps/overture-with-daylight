@@ -8,7 +8,11 @@ const EARTH = {
         "minzoom": 0,
         "maxzoom": 24,
         "paint": {
-            "fill-color": "hsl(210, 10%, 17%)"
+            "fill-color": [
+                "interpolate", ["linear"], ["zoom"],
+                5, "hsl(216,20%,99%)",
+                16, "hsl(216,20%,95%)"
+            ]
         }
     },
     "sand": {
@@ -20,7 +24,7 @@ const EARTH = {
         "minzoom": 0,
         "maxzoom": 24,
         "paint": {
-            "fill-color": "hsl(53, 10%, 17%)"
+            "fill-color": "hsl(43, 69%, 95%)"
         }
     },
     "wetland": {
@@ -32,10 +36,10 @@ const EARTH = {
         "minzoom": 0,
         "maxzoom": 24,
         "paint": {
-            "fill-color": "hsl(190, 26%, 18%)"
+            "fill-color": "hsl(132, 36%, 89%)"
         }
     },
-    "forest":{
+    "forest": {
         "id": "forest",
         "type": "fill",
         "source": 'land',
@@ -44,7 +48,7 @@ const EARTH = {
         "minzoom": 0,
         "maxzoom": 24,
         "paint": {
-            "fill-color": "hsl(189, 24%, 17%)"
+            "fill-color": "hsl(131, 35%, 90%)"
         }
     },
     "water": {
@@ -55,7 +59,7 @@ const EARTH = {
         "minzoom": 0,
         "maxzoom": 24,
         "paint": {
-            "fill-color": "hsl(221,39%,36%)"
+            "fill-color": "hsl(204,88%,82%)"
         }
     }
 }
