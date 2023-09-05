@@ -50,7 +50,7 @@ COPY (
 WITH (FORMAT GDAL, DRIVER 'GeoJSONSeq');
 ```
 
-All of the DuckDB queries used in this example are recorded in `conversion.sql`.
+All of the DuckDB queries used in this example are recorded in `conversion.sql`. The queries require that the [spatial](https://duckdb.org/docs/extensions/spatial.html) DuckDB extension is installed.
 
 ### 3. Create a tileset
 Use [Tippecanoe](https://github.com/felt/tippecanoe) to turn the geojson features into a `pmtiles` archive:
