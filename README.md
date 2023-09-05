@@ -65,7 +65,7 @@ In this example, we will only render the tiles at zoom-level 11 and overzoom fro
 Maplibre can read pmtiles directly with the pmtiles protocol.
 ```html
 <head>
-    <script src="https://unpkg.com/pmtiles@2.5.0/dist/index.js"></script>`
+    <script src="https://unpkg.com/pmtiles@2.5.0/dist/index.js"></script>
 </head>
 ```
 
