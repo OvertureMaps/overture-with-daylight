@@ -90,12 +90,11 @@ style: {
 
 Read the full source here: https://github.com/OvertureMaps/overture-with-daylight/blob/main/docs/index.html.
 
-
 ### Running Locally
-This demo uses `[pmtiles](https://github.com/protomaps/PMTiles)`, so you will need a local http server that can support byte range requests with cors.
+This demo uses [pmtiles](https://github.com/protomaps/PMTiles), so you will need a local HTTP server that can support byte-range requests with CORS.
 
-On a mac, you can run `http-server --cors .` from the `docs` directory after installing http-server:
-`brew install http-server`). Then open http://127.0.0.1
+On a Mac, you can run `http-server --cors .` from the `docs` directory after installing http-server:
+`brew install http-server`). Then open http://127.0.0.1.
 
 ### Licensing
 This example is licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
