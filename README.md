@@ -50,7 +50,7 @@ COPY (
 WITH (FORMAT GDAL, DRIVER 'GeoJSONSeq');
 ```
 
-All of the DuckDB queries used in this example are recorded in `conversion.sql`.
+All of the DuckDB queries used in this example are recorded in `conversion.sql`. The queries require that the [spatial](https://duckdb.org/docs/extensions/spatial.html) DuckDB extension is installed.
 
 ### 3. Create a tileset
 Use [Tippecanoe](https://github.com/felt/tippecanoe) to turn the geojson features into a `pmtiles` archive:
@@ -65,7 +65,7 @@ In this example, we will only render the tiles at zoom-level 11 and overzoom fro
 Maplibre can read pmtiles directly with the pmtiles protocol.
 ```html
 <head>
-    <script src="https://unpkg.com/pmtiles@2.5.0/dist/index.js"></script>`
+    <script src="https://unpkg.com/pmtiles@2.5.0/dist/index.js"></script>
 </head>
 ```
 
@@ -90,12 +90,11 @@ style: {
 
 Read the full source here: https://github.com/OvertureMaps/overture-with-daylight/blob/main/docs/index.html.
 
-
 ### Running Locally
-This demo uses `[pmtiles](https://github.com/protomaps/PMTiles)`, so you will need a local http server that can support byte range requests with cors.
+This demo uses [pmtiles](https://github.com/protomaps/PMTiles), so you will need a local HTTP server that can support byte-range requests with CORS.
 
-On a mac, you can run `http-server --cors .` from the `docs` directory after installing http-server:
-`brew install http-server`). Then open http://127.0.0.1
+On a Mac, you can run `http-server --cors .` from the `docs` directory after installing http-server:
+`brew install http-server`). Then open http://127.0.0.1.
 
 ### Licensing
 This example is licensed under [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/legalcode).

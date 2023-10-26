@@ -1,3 +1,4 @@
+INSTALL spatial;
 LOAD spatial;
 
 -- Places
